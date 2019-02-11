@@ -1,14 +1,12 @@
 package com.codeoftheweb.salvo;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.GenericGenerator;
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-
 import static java.util.stream.Collectors.toList;
 
 @Entity
@@ -22,8 +20,7 @@ public class Game {
     private LocalDateTime localDateTime;
     @JsonIgnore
     @OneToMany(mappedBy="game", fetch=FetchType.EAGER)
-    private Set<GamePlayer> gamePlayers;
-
+    private Set<GamePlayer> gamePlayers = new LinkedHashSet<>();
 
     //CONSTRUCTOR
     public Game(){}
@@ -57,10 +54,13 @@ public class Game {
     }
 
     //MY METHODS
-        public void addGamePlayer(GamePlayer gamePlayer) {
+
+    public void addGamePlayer(GamePlayer gamePlayer) {
         gamePlayer.setGame(this);
         gamePlayers.add(gamePlayer);
     }
+
+    //Task-2 Point-2
     public List<Player> getPlayers() {
         return gamePlayers.stream().map(sub -> sub.getPlayer()).collect(toList());
     }

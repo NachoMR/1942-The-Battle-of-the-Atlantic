@@ -46,18 +46,4 @@ public class SalvoController {
         return info;
     }
 
-    //public List<Game> getGames() {
-    //    return gameRepo.findAll();
-    //}
-
-    //optional return for /games
-    //public List<Object> getGames() {
-    //    return gameRepo.findAll().stream().map(b -> b..toString()).collect(toList());
-    //}
-
-    //optional return for /games
-    //public List<Long> getGamesId() {
-    //    return gameRepo.findAll().stream().map(b -> b.getId()).collect(toList());
-    //}
-
 }

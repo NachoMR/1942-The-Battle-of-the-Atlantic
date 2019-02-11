@@ -3,9 +3,9 @@ package com.codeoftheweb.salvo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-
 import static java.util.stream.Collectors.toList;
 
 @Entity
@@ -23,7 +23,7 @@ public class Player {
 
     @JsonIgnore
     @OneToMany(mappedBy="player", fetch= FetchType.EAGER)
-    Set<GamePlayer> gamePlayers;
+    Set<GamePlayer> gamePlayers = new LinkedHashSet<>();
 
         //CONSTRUCTOR
     public Player(){}
@@ -86,16 +86,17 @@ public class Player {
     }
 
     //MY METHODS
+
     public void addGamePlayer(GamePlayer gamePlayer) {
         gamePlayer.setPlayer(this);
         gamePlayers.add(gamePlayer);
     }
 
+    //Task-2 Point-2
+    @JsonIgnore
     public List<Game> getGames() {
         return gamePlayers.stream().map(sub -> sub.getGame()).collect(toList());
     }
 
-//    public String toString() {
-//        return firstName + " " + lastName + " " + userName + " " + password;
-//    }
+
 }
