@@ -17,7 +17,7 @@ public class Game {
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
     @GenericGenerator(name = "native", strategy = "native")
     private Long id;
-    private LocalDateTime localDateTime;
+    private LocalDateTime created;
     @JsonIgnore
     @OneToMany(mappedBy="game", fetch=FetchType.EAGER)
     private Set<GamePlayer> gamePlayers = new LinkedHashSet<>();
@@ -25,7 +25,7 @@ public class Game {
     //CONSTRUCTOR
     public Game(){}
     public Game(LocalDateTime localDateTime){
-        this.localDateTime = localDateTime;
+        this.created = localDateTime;
     }
 
     //METHODS
@@ -37,12 +37,12 @@ public class Game {
         this.id = id;
     }
 
-    public LocalDateTime getLocalDateTime() {
-        return localDateTime;
+    public LocalDateTime getCreated() {
+        return created;
     }
 
-    public void setLocalDateTime(LocalDateTime localDateTime) {
-        this.localDateTime = localDateTime;
+    public void setCreated(LocalDateTime created) {
+        this.created = created;
     }
 
     public Set<GamePlayer> getGamePlayers() {

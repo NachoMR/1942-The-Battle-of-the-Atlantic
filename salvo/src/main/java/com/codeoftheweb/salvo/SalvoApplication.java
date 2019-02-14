@@ -34,6 +34,20 @@ public class SalvoApplication {
 			Game g6 = new Game(LocalDateTime.parse("2019-02-02T17:45:00"));
 			Game g7 = new Game(LocalDateTime.parse("2019-01-14T17:45:00"));
 			Game g8 = new Game(LocalDateTime.parse("2019-01-30T17:45:00"));
+			GamePlayer gp1 = new GamePlayer(g1, p1);
+			GamePlayer gp2 = new GamePlayer(g1, p2);
+			GamePlayer gp3 = new GamePlayer(g2, p1);
+			GamePlayer gp4 = new GamePlayer(g2, p2);
+			GamePlayer gp5 = new GamePlayer(g3, p2);
+			GamePlayer gp6 = new GamePlayer(g3, p4);
+			GamePlayer gp7 = new GamePlayer(g4, p2);
+			GamePlayer gp8 = new GamePlayer(g4, p1);
+			GamePlayer gp9 = new GamePlayer(g5, p4);
+			GamePlayer gp10 = new GamePlayer(g5, p1);
+			GamePlayer gp11 = new GamePlayer(g6, p3);
+			GamePlayer gp12 = new GamePlayer(g7, p4);
+			GamePlayer gp13 = new GamePlayer(g8, p3);
+			GamePlayer gp14 = new GamePlayer(g8, p4);
 			Ship s1 = new Ship("destroyer", Arrays.asList("H2", "H3", "H4"));
 			Ship s2 = new Ship("submarine", Arrays.asList("E1", "F1", "G1"));
 			Ship s3 = new Ship("patrol_boat", Arrays.asList("B4", "B5"));
@@ -61,22 +75,6 @@ public class SalvoApplication {
 			Ship s25 = new Ship("patrol_boat", Arrays.asList("C6", "C7"));
 			Ship s26 = new Ship("submarine", Arrays.asList("A2", "A3", "A4"));
 			Ship s27 = new Ship("patrol_boat", Arrays.asList("G6", "H6"));
-
-
-			GamePlayer gp1 = new GamePlayer(g1, p1);
-			GamePlayer gp2 = new GamePlayer(g1, p2);
-			GamePlayer gp3 = new GamePlayer(g2, p1);
-			GamePlayer gp4 = new GamePlayer(g2, p2);
-			GamePlayer gp5 = new GamePlayer(g3, p2);
-			GamePlayer gp6 = new GamePlayer(g3, p4);
-			GamePlayer gp7 = new GamePlayer(g4, p2);
-			GamePlayer gp8 = new GamePlayer(g4, p1);
-			GamePlayer gp9 = new GamePlayer(g5, p4);
-			GamePlayer gp10 = new GamePlayer(g5, p1);
-			GamePlayer gp11 = new GamePlayer(g6, p3);
-			GamePlayer gp12 = new GamePlayer(g7, p4);
-			GamePlayer gp13 = new GamePlayer(g8, p3);
-			GamePlayer gp14 = new GamePlayer(g8, p4);
 			gp1.addShip(s1);
 			gp1.addShip(s2);
 			gp1.addShip(s3);
@@ -104,8 +102,6 @@ public class SalvoApplication {
 			gp13.addShip(s25);
 			gp14.addShip(s26);
 			gp14.addShip(s27);
-
-
 			playerRepository.save(p1);
 			playerRepository.save(p2);
 			playerRepository.save(p3);
