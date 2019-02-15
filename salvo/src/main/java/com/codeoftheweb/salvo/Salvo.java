@@ -7,14 +7,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class Ship {
+public class Salvo {
 
     //FIELDS
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
     @GenericGenerator(name = "native", strategy = "native")
     private Long id;
-    private String type;
+    private Integer turn;
 
     @ElementCollection
     @Column(name="location")
@@ -25,9 +25,9 @@ public class Ship {
     private GamePlayer gamePlayer;
 
     //CONSTRUCTOR
-    public Ship(){}
-    public Ship(String type, List<String> locations){
-        this.type = type;
+    public Salvo(){}
+    public Salvo(Integer turn, List<String> locations){
+        this.turn = turn;
         this.locations = locations;
     }
 
@@ -41,12 +41,12 @@ public class Ship {
         this.id = id;
     }
 
-    public String getType() {
-        return type;
+    public Integer getTurn() {
+        return turn;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setTurn(Integer turn) {
+        this.turn = turn;
     }
 
     public List<String> getLocations() {
@@ -68,5 +68,4 @@ public class Ship {
 
 
     //MY METHODS
-
 }

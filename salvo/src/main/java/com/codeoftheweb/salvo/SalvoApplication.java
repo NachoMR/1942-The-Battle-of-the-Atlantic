@@ -19,7 +19,7 @@ public class SalvoApplication {
 	}
 
 	@Bean
-	public CommandLineRunner init(PlayerRepository playerRepository, GameRepository gameRepository, GamePlayerRepository gamePlayerRepository, ShipRepository shipRepository) {
+	public CommandLineRunner init(PlayerRepository playerRepository, GameRepository gameRepository, GamePlayerRepository gamePlayerRepository, ShipRepository shipRepository, SalvoRepository salvoRepository) {
 		return (args) -> {
 
 			Player p1 = new Player("Jack", "Bauer", "j.bauer@ctu.gov", "passJack");
@@ -102,6 +102,48 @@ public class SalvoApplication {
 			gp13.addShip(s25);
 			gp14.addShip(s26);
 			gp14.addShip(s27);
+			Salvo sa1 = new Salvo(1, Arrays.asList("B5", "C5", "F1"));
+			Salvo sa2 = new Salvo(2, Arrays.asList("F2", "D5"));
+			Salvo sa3 = new Salvo(1, Arrays.asList("B4", "B5", "B6"));
+			Salvo sa4 = new Salvo(2, Arrays.asList("E1", "H3", "A2"));
+			Salvo sa5 = new Salvo(1, Arrays.asList("A2", "A4", "G6"));
+			Salvo sa6 = new Salvo(2, Arrays.asList("A3", "H2"));
+			Salvo sa7 = new Salvo(1, Arrays.asList("B5", "D5", "C7"));
+			Salvo sa8 = new Salvo(2, Arrays.asList("C5", "C6"));
+			Salvo sa9 = new Salvo(1, Arrays.asList("G6", "H6", "A4"));
+			Salvo sa10 = new Salvo(2, Arrays.asList("A2", "A3", "D8"));
+			Salvo sa11 = new Salvo(1, Arrays.asList("H1", "H2", "H3"));
+			Salvo sa12 = new Salvo(2, Arrays.asList("E1", "F2", "G3"));
+			Salvo sa13 = new Salvo(1, Arrays.asList("A3", "A4", "F7"));
+			Salvo sa14 = new Salvo(2, Arrays.asList("A2", "G6", "H6"));
+			Salvo sa15 = new Salvo(1, Arrays.asList("B5", "C6", "H1"));
+			Salvo sa16 = new Salvo(2, Arrays.asList("C5", "C7", "D5"));
+			Salvo sa17 = new Salvo(1, Arrays.asList("A1", "A2", "A3"));
+			Salvo sa18 = new Salvo(2, Arrays.asList("G6", "G7", "G8"));
+			Salvo sa19 = new Salvo(1, Arrays.asList("B5", "B6", "C7"));
+			Salvo sa20 = new Salvo(2, Arrays.asList("C6", "D6", "E6"));
+			Salvo sa21 = new Salvo(3, Arrays.asList("H1", "H8"));
+			gp1.addSalvo(sa1);
+			gp1.addSalvo(sa2);
+			gp2.addSalvo(sa3);
+			gp2.addSalvo(sa4);
+			gp3.addSalvo(sa5);
+			gp3.addSalvo(sa6);
+			gp4.addSalvo(sa7);
+			gp4.addSalvo(sa8);
+			gp5.addSalvo(sa9);
+			gp5.addSalvo(sa10);
+			gp6.addSalvo(sa11);
+			gp6.addSalvo(sa12);
+			gp7.addSalvo(sa13);
+			gp7.addSalvo(sa14);
+			gp8.addSalvo(sa15);
+			gp8.addSalvo(sa16);
+			gp9.addSalvo(sa17);
+			gp9.addSalvo(sa18);
+			gp10.addSalvo(sa19);
+			gp10.addSalvo(sa20);
+			gp10.addSalvo(sa21);
 			playerRepository.save(p1);
 			playerRepository.save(p2);
 			playerRepository.save(p3);
@@ -155,6 +197,27 @@ public class SalvoApplication {
 			shipRepository.save(s25);
 			shipRepository.save(s26);
 			shipRepository.save(s27);
+			salvoRepository.save(sa1);
+			salvoRepository.save(sa2);
+			salvoRepository.save(sa3);
+			salvoRepository.save(sa4);
+			salvoRepository.save(sa5);
+			salvoRepository.save(sa6);
+			salvoRepository.save(sa7);
+			salvoRepository.save(sa8);
+			salvoRepository.save(sa9);
+			salvoRepository.save(sa10);
+			salvoRepository.save(sa11);
+			salvoRepository.save(sa12);
+			salvoRepository.save(sa13);
+			salvoRepository.save(sa14);
+			salvoRepository.save(sa15);
+			salvoRepository.save(sa16);
+			salvoRepository.save(sa17);
+			salvoRepository.save(sa18);
+			salvoRepository.save(sa19);
+			salvoRepository.save(sa20);
+			salvoRepository.save(sa21);
 		};
 	}
 

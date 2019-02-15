@@ -18,7 +18,7 @@ public class Game {
     @GenericGenerator(name = "native", strategy = "native")
     private Long id;
     private LocalDateTime created;
-    @JsonIgnore
+    //@JsonIgnore
     @OneToMany(mappedBy="game", fetch=FetchType.EAGER)
     private Set<GamePlayer> gamePlayers = new LinkedHashSet<>();
 
@@ -45,6 +45,7 @@ public class Game {
         this.created = created;
     }
 
+    @JsonIgnore
     public Set<GamePlayer> getGamePlayers() {
         return gamePlayers;
     }

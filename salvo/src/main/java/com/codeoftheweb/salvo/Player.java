@@ -21,7 +21,7 @@ public class Player {
     private String userName;
     private String password;
 
-    @JsonIgnore
+    //@JsonIgnore
     @OneToMany(mappedBy="player", fetch= FetchType.EAGER)
     Set<GamePlayer> gamePlayers = new LinkedHashSet<>();
 
@@ -77,6 +77,7 @@ public class Player {
         this.password = password;
     }
 
+    @JsonIgnore
     public Set<GamePlayer> getGamePlayers() {
         return gamePlayers;
     }

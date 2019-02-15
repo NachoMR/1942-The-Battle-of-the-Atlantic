@@ -11,7 +11,7 @@ var myVue = new Vue({
 	},
 	created: function () {
 		fetch('http://localhost:8080/api/games', {
-				method: 'GET',
+				method: 'GET'
 			})
 			.then(function (response) {
 				return response.json();

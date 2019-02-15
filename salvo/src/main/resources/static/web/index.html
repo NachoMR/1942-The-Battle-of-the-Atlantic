@@ -10,45 +10,28 @@
 </head>
 
 <body>
-<div id="app" class="container">
-	<!--		============= loader =============  
-	<div id="loader" v-if="!contentVisible">
-		<div class="lds-spinner">
-			<div></div>
-			<div></div>
-			<div></div>
-			<div></div>
-			<div></div>
-			<div></div>
-			<div></div>
-			<div></div>
-			<div></div>
-			<div></div>
-			<div></div>
-			<div></div>
+	<div id="app" class="container">
+		<div class="text-center">
+			<h1>Ships Location!</h1>
+			<h3>This is your current game</h3>
 		</div>
-	</div>
-			============= loader =============  -->
-		<div>
-			<div class="text-center" v-if="game_view.length != 0">
-				<h1>This is {{game_view.gamePlayers[0].player.email.split("@")[0]}} current Game</h1>
-				<h4>{{game_view.gamePlayers[0].player.email}} - vs - {{game_view.gamePlayers[1].player.email}}</h4>
+		<div class="row">
+			<!--			<div class="col-sm-1"></div>-->
+			<div class="col-sm text-center">
+				<h4>This is your grid</h4>
+				<table id="playerTable" class="playingBoard mx-auto">
+				</table>
 			</div>
+			<div class="col-sm text-center">
+				<h4>This is your opponent's grid</h4>
+				<table id="opponentTable" class="playingBoard mx-auto"></table>
+			</div>
+			<!--			<div class="col-sm-1"></div>-->
+		</div>
 
-			<div class="row">
-				<!--			<div class="col-sm-1"></div>-->
-				<div class="col-sm text-center">
-					<h4>These are your Ship Locations</h4>
-					<table id="shipLocations" class="playingBoard mx-auto">
-					</table>
-				</div>
-				<div class="col-sm text-center">
-					<h4>These are your Salvoes</h4>
-					<table id="salvoesLocations" class="playingBoard mx-auto"></table>
-				</div>
-				<!--			<div class="col-sm-1"></div>-->
-			</div>
-		</div>
+
+
+
 	</div>
 
 

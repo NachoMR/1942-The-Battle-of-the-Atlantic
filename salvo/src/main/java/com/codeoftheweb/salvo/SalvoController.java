@@ -47,13 +47,26 @@ public class SalvoController {
         return info;
     }
 
+    public Optional<GamePlayer> getOpponentGp(GamePlayer currentGp){
+        Optional<GamePlayer> opponentGp = currentGp
+                .getGame()
+                .getGamePlayers()
+                .stream()
+                .filter(gp -> !gp.getId().equals(currentGp.getId()))
+                .findFirst();
+        //alternatively, if you want to define your opponent as a GamePlayer type then you would write:
+        //GamePlayer opponentGp = currentGp.getGame().getGamePlayers().stream().filter(b -> b.getId() != currentGp.getId()).findFirst().orElse(null);
+        //alternatively:
+        //GamePlayer oponentGp = currentGp.getGame().getGamePlayers().stream().filter(b -> b.getId() != currentGp.getId()).collect(toList()).get(0);
+        return opponentGp;
+    }
 
     // Controller for /api/game_view/nn
     @RequestMapping("/game_view/{gamePlayerId}")
     public Map<String, Object> getGameInfo(@PathVariable Long gamePlayerId){
         Map<String, Object> info = new LinkedHashMap<>();
         GamePlayer currentGp = gamePlayerRepo.findById(gamePlayerId).orElse(null);
-        // the below line of code will do the same as the one above
+        // alternatively:
         // GamePlayer currentGp = gamePlayerRepo.getOne(gamePlayerId);
         info.put("id", currentGp.getGame().getId());
         info.put("created", currentGp.getGame().getCreated());
@@ -62,15 +75,15 @@ public class SalvoController {
         .stream()
         .map(ship -> shipDetailDTO(ship))
         .collect(toList()));
+        info.put("salvoes", salvoesDTO(currentGp));
         return info;
     }
-
     public List<Object> gamePlayersDTO(GamePlayer currentGp){
         List<Object> currentGamePlayers = new ArrayList<>();
-        GamePlayer oponentGp = currentGp.getGame().getGamePlayers().stream().filter(b -> b.getId() != currentGp.getId()).collect(toList()).get(0);
+        Optional<GamePlayer> oponentGp = getOpponentGp(currentGp);
         //we only need to add two players to the list of players in this game.
         currentGamePlayers.add(playerDTO(currentGp));
-        currentGamePlayers.add(playerDTO(oponentGp));
+        currentGamePlayers.add(playerDTO(oponentGp.orElse(null)));
         return currentGamePlayers;
     }
     public Map<String, Object> playerDTO(GamePlayer argumentGp){
@@ -91,5 +104,25 @@ public class SalvoController {
         info.put("locations", ship.getLocations());
         return info;
     }
+
+    public List<Object> salvoesDTO(GamePlayer currentGp){
+        List<Object> info = new ArrayList<>();
+        //currentGp.getSalvoes().forEach(salvo -> info.add(salvo));
+        //getOpponentGp(currentGp).orElse(null).getSalvoes().forEach(salvo -> info.add(salvo));
+        currentGp.getSalvoes().forEach(salvo -> info.add(salvoDTO(salvo)));
+        getOpponentGp(currentGp).orElse(null).getSalvoes().forEach(salvo -> info.add(salvoDTO(salvo)));
+        return info;
+    }
+
+    public Map<String, Object> salvoDTO(Salvo salvo){
+        Map<String, Object> info = new LinkedHashMap<>();
+        info.put("turn", salvo.getTurn());
+        info.put("gamePlayer", salvo.getGamePlayer().getId());
+        //alternatively (both ways we shoud get the same Id number:
+        //info.put("gamePlayer", argumentGp.getId());
+        info.put("locations", salvo.getLocations());
+        return info;
+    }
+
 
 }

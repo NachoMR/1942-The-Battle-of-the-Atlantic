@@ -1,59 +1,63 @@
-//for(var i = 0; i < 11; i++){	document.getElementById("playerTable").appendChild(document.createElement("div"))
-//}
-
-//var text = ["", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
-//text.forEach(function(el) {
-//    var div = document.createElement("div");
-//    div.innerHTML = el;
-//    document.getElementById("playerTabl").appendChild(div);
-//});
-
+//Creation of the two grids (ship's location and Salvoes)
 var colNumbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
 var rowLetters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
-//var emptyCell = ["", "", "", "", "", "", "", "", "", "",];
 
 var headerRow = "<tr><td></td>" + colNumbers.map(col => "<td>" + col + "</td>").join("") + "</tr>";
-var letterRows = rowLetters.map(row => "<tr><td>" + row + "</td>" + colNumbers.map(col => "<td id="{row+col}">" + row+col + "</td>").join("") + "</tr>").join("");
+var letterRows = rowLetters.map(row => "<tr><td>" + row + "</td>" + colNumbers.map(col => "<td id='" + row + col + "'>" + "·" + "</td>").join("") + "</tr>").join("");
 
-document.getElementById("playerTable").innerHTML = headerRow + letterRows;
-document.getElementById("opponentTable").innerHTML = headerRow + letterRows;
+document.getElementById("shipLocations").innerHTML = headerRow + letterRows;
+//document.getElementById("salvoesLocations").innerHTML = headerRow + letterRows;
 
+//getting the gameplayer id from the "query string" at the end of the URL http://localhost:8080/web/game.html?gp=3
+var gpNumber = window.location.search.split("=")[1]
+console.log("Vamos a hacer Fetch sobre: http://localhost:8080/api/game_view/" + gpNumber);
 
 //================ VUE VAR DECLARATION ===================
-/*
+
 var myVue = new Vue({
 	el: "#app",
 	data: {
-		games: [],
-		gameplayers: []
+		contentVisible: false,
+		game_view: [],
 	},
 	methods: {
-		//		getGames: 
+
 	},
 	created: function () {
-		fetch('http://localhost:8080/api/games', {
-				method: 'GET',
+		fetch('http://localhost:8080/api/game_view/' + gpNumber, {
+				method: 'GET'
 			})
 			.then(function (response) {
 				return response.json();
-				//console.log("First .then() works!");
 			})
-			.then(function (games) {
-				console.log(JSON.stringify(games));
-				//console.log(games);
-				console.log("Second .then() works!");
-				myVue.games = games;
-				myVue.gameplayers = games.gameplayers;
-			}).catch(function (error) {
+			.then(function (game_view) {
+				console.log(game_view);
+				myVue.game_view = game_view;
+				myVue.contentVisible = true;
+				showShips(myVue.game_view.ships);
+			})
+			.catch(function (error) {
 				alert(error);
-				//console.log("Error during fetch" + error.message)
 			});
 	},
-	computed: {}
+
+	computed: {
+		renderSalvoes: function () {
+			/*to be defined later on when we implement salvoes for currrentPlayer*/
+		}
+	}
 });
 
-
-//myVue.getGames();
-
-*/
 // ====================== FUNCTIONS ======================
+
+
+function showShips(ships) {
+//	var ships = myVue.game_view.ships;
+	//console.log("aaaaaaaaaaa", JSON.stringify(ships))
+	ships.forEach(a => a.locations.forEach(b => {
+	//console.log(a.type + " " + b)
+	console.log(b)
+	document.getElementById(b).setAttribute("class", a.type)
+	})
+	);
+}

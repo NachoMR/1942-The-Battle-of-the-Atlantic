@@ -1,5 +1,6 @@
 package com.codeoftheweb.salvo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -23,9 +24,12 @@ public class GamePlayer {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="player_id")
     private Player player;
-
+    //@JsonIgnore
     @OneToMany(mappedBy="gamePlayer", fetch=FetchType.EAGER)
     private Set<Ship> ships = new LinkedHashSet<>();
+    //@JsonIgnore
+    @OneToMany(mappedBy="gamePlayer", fetch=FetchType.EAGER)
+    private Set<Salvo> salvoes = new LinkedHashSet<>();
 
     //CONSTRUCTOR
     public GamePlayer(){}
@@ -75,9 +79,23 @@ public class GamePlayer {
         this.ships = ships;
     }
 
+    public Set<Salvo> getSalvoes() {
+        return salvoes;
+    }
+
+    public void setSalvoes(Set<Salvo> salvoes) {
+        this.salvoes = salvoes;
+    }
+
     //MY METHODS
     public void addShip(Ship ship) {
         ship.setGamePlayer(this);
         ships.add(ship);
     }
+
+    public void addSalvo(Salvo salvo) {
+        salvo.setGamePlayer(this);
+        salvoes.add(salvo);
+    }
+
 }
