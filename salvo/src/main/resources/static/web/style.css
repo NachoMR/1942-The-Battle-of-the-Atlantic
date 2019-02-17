@@ -30,6 +30,11 @@ td{
 .patrol_boat{
 	background-color: #079992;
 }
+.salvoes{
+	background-image: url(explosion.gif);
+	background-size: contain;
+	background-repeat: no-repeat;
+}
 
 
 /* ================ loader ================ 

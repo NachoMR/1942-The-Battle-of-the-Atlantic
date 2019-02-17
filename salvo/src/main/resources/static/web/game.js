@@ -1,14 +1,10 @@
-//Creation of the two grids (ship's location and Salvoes)
+//Creation of the two grids (ship's location and Salvoes) by means of function renderTable()
 var colNumbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
 var rowLetters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
+renderTable("ship", "shipLocations");
+renderTable("salvo", "salvoesLocations");
 
-var headerRow = "<tr><td></td>" + colNumbers.map(col => "<td>" + col + "</td>").join("") + "</tr>";
-var letterRows = rowLetters.map(row => "<tr><td>" + row + "</td>" + colNumbers.map(col => "<td id='" + row + col + "'>" + "·" + "</td>").join("") + "</tr>").join("");
-
-document.getElementById("shipLocations").innerHTML = headerRow + letterRows;
-//document.getElementById("salvoesLocations").innerHTML = headerRow + letterRows;
-
-//getting the gameplayer id from the "query string" at the end of the URL http://localhost:8080/web/game.html?gp=3
+//getting the active/current gameplayer id from the "query string" at the end of the URL http://localhost:8080/web/game.html?gp=3
 var gpNumber = window.location.search.split("=")[1]
 console.log("Vamos a hacer Fetch sobre: http://localhost:8080/api/game_view/" + gpNumber);
 
@@ -17,12 +13,9 @@ console.log("Vamos a hacer Fetch sobre: http://localhost:8080/api/game_view/" + 
 var myVue = new Vue({
 	el: "#app",
 	data: {
-		contentVisible: false,
 		game_view: [],
 	},
-	methods: {
-
-	},
+	methods: {},
 	created: function () {
 		fetch('http://localhost:8080/api/game_view/' + gpNumber, {
 				method: 'GET'
@@ -33,31 +26,51 @@ var myVue = new Vue({
 			.then(function (game_view) {
 				console.log(game_view);
 				myVue.game_view = game_view;
-				myVue.contentVisible = true;
 				showShips(myVue.game_view.ships);
+				showSalvoes(myVue.game_view.salvoes);			
 			})
 			.catch(function (error) {
 				alert(error);
 			});
 	},
 
-	computed: {
-		renderSalvoes: function () {
-			/*to be defined later on when we implement salvoes for currrentPlayer*/
-		}
-	}
+	computed: {}
 });
 
 // ====================== FUNCTIONS ======================
 
+function renderTable(cellIdPrefix, tableId){
+	document.getElementById(tableId).innerHTML = "<tr><td></td>" + colNumbers.map(col => "<td>" + col + "</td>").join("") + "</tr>" + rowLetters.map(row => "<tr><td>" + row + "</td>" + colNumbers.map(col => "<td id='" + cellIdPrefix + row + col + "'>" + "·" + "</td>").join("") + "</tr>").join("");
+}
 
 function showShips(ships) {
-//	var ships = myVue.game_view.ships;
-	//console.log("aaaaaaaaaaa", JSON.stringify(ships))
 	ships.forEach(a => a.locations.forEach(b => {
-	//console.log(a.type + " " + b)
-	console.log(b)
-	document.getElementById(b).setAttribute("class", a.type)
+	document.getElementById("ship" + b).setAttribute("class", a.type)
 	})
 	);
 }
+
+function showSalvoes(salvoes){
+	//this functions will show/render salvoes for currentGp and his/her opponentGp
+	salvoes.forEach(salvo => {
+		if(salvo.gamePlayer == gpNumber){
+			//console.log("imprimiendo salvoes del currentGp");
+			//salvo.locations.forEach(location => console.log(location + " " + typeof(location)));			
+			salvo.locations.forEach(location => document.getElementById("salvo" + location).classList.add("salvoes"));
+		}
+		else{
+			//console.log("imprimiendo salvoes del opponentGp");
+			salvo.locations.forEach(location => document.getElementById("ship" + location).classList.add("salvoes"));
+		}
+	});
+}
+
+
+
+
+
+
+
+
+
+
