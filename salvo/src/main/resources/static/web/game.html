@@ -10,25 +10,7 @@
 </head>
 
 <body>
-<div id="app" class="container">
-	<!--		============= loader =============  
-	<div id="loader" v-if="!contentVisible">
-		<div class="lds-spinner">
-			<div></div>
-			<div></div>
-			<div></div>
-			<div></div>
-			<div></div>
-			<div></div>
-			<div></div>
-			<div></div>
-			<div></div>
-			<div></div>
-			<div></div>
-			<div></div>
-		</div>
-	</div>
-			============= loader =============  -->
+	<div id="app" class="container">
 		<div>
 			<div class="text-center" v-if="game_view.length != 0">
 				<h1>This is {{game_view.gamePlayers[0].player.email.split("@")[0]}} current Game</h1>
@@ -44,7 +26,8 @@
 				</div>
 				<div class="col-sm text-center">
 					<h4>These are your Salvoes</h4>
-					<table id="salvoesLocations" class="playingBoard mx-auto"></table>
+					<table id="salvoesLocations" class="playingBoard mx-auto">
+					</table>
 				</div>
 				<!--			<div class="col-sm-1"></div>-->
 			</div>

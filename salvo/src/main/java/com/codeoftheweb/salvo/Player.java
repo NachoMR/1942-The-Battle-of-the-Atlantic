@@ -5,6 +5,7 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import static java.util.stream.Collectors.toList;
 
@@ -20,10 +21,14 @@ public class Player {
     private String lastName;
     private String userName;
     private String password;
-
     //@JsonIgnore
     @OneToMany(mappedBy="player", fetch= FetchType.EAGER)
     Set<GamePlayer> gamePlayers = new LinkedHashSet<>();
+    @OneToMany(mappedBy="player", fetch= FetchType.EAGER)
+    Set<Score> scores = new LinkedHashSet<>();
+
+
+
 
         //CONSTRUCTOR
     public Player(){}
@@ -86,6 +91,14 @@ public class Player {
         this.gamePlayers = gamePlayers;
     }
 
+        public Set<Score> getScores() {
+        return scores;
+    }
+
+    public void setScores(Set<Score> scores) {
+        this.scores = scores;
+    }
+
     //MY METHODS
 
     public void addGamePlayer(GamePlayer gamePlayer) {
@@ -97,6 +110,16 @@ public class Player {
     @JsonIgnore
     public List<Game> getGames() {
         return gamePlayers.stream().map(sub -> sub.getGame()).collect(toList());
+    }
+
+    public void addScore(Score score) {
+        //score.setPlayer(this);
+        scores.add(score);
+    }
+
+    public Optional<Score> getScore(Game game){
+        Optional<Score> playerScore = this.scores.stream().filter(p -> p.getGame().equals(game)).findFirst();
+        return playerScore;
     }
 
 

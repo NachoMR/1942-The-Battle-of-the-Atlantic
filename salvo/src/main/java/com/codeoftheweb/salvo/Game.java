@@ -21,6 +21,8 @@ public class Game {
     //@JsonIgnore
     @OneToMany(mappedBy="game", fetch=FetchType.EAGER)
     private Set<GamePlayer> gamePlayers = new LinkedHashSet<>();
+    @OneToMany(mappedBy="game", fetch= FetchType.EAGER)
+    Set<Score> scores = new LinkedHashSet<>();
 
     //CONSTRUCTOR
     public Game(){}
@@ -54,6 +56,14 @@ public class Game {
         this.gamePlayers = gamePlayers;
     }
 
+    public Set<Score> getScores() {
+        return scores;
+    }
+
+    public void setScores(Set<Score> scores) {
+        this.scores = scores;
+    }
+
     //MY METHODS
 
     public void addGamePlayer(GamePlayer gamePlayer) {
@@ -65,6 +75,13 @@ public class Game {
     public List<Player> getPlayers() {
         return gamePlayers.stream().map(sub -> sub.getPlayer()).collect(toList());
     }
+
+    public void addScore(Score score) {
+        //score.setGame(this);
+        scores.add(score);
+    }
+
+
 
 
 }

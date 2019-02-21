@@ -1,13 +1,10 @@
 package com.codeoftheweb.salvo;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.LinkedCaseInsensitiveMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import java.time.LocalDateTime;
 import java.util.*;
-
 import static java.util.stream.Collectors.toList;
 
 @RestController
@@ -19,6 +16,24 @@ public class SalvoController {
     private GameRepository gameRepo;
     @Autowired
     private GamePlayerRepository gamePlayerRepo;
+    @Autowired
+    private PlayerRepository playerRepo;
+
+
+    // Controller for /api/leaderboard
+    @RequestMapping("/leaderboard")
+    public List<Map> getLeaderboard(){
+        return  playerRepo.findAll().stream().map(player -> playerInfoDTO(player)).collect(toList());
+    }
+    public Map<String, Object> playerInfoDTO(Player player){
+        Map<String, Object> info = new LinkedHashMap<>();
+        info.put("name", player.getUserName());
+        info.put("won", player.getScores().stream().filter(b -> b.getPoints() == 1).collect(toList()));
+        info.put("lost", player.getScores().stream().filter(b -> b.getPoints() == 0).collect(toList()));
+        info.put("tied", player.getScores().stream().filter(b -> b.getPoints() == 0.5).collect(toList()));
+        //info.put("total", player.getScores().stream().filter(b -> b.getPoints() >= 0.0).collect(toList()));
+        return info;
+    }
 
     // Controller for /api/games
     @RequestMapping("/games")
@@ -30,8 +45,13 @@ public class SalvoController {
         Map<String, Object> info = new LinkedHashMap<>();
         info.put("id", game.getId());
         info.put("created", game.getCreated());
-        info.put("gameplayers", game.getGamePlayers().stream()
-                                .map(gamePlayer -> gamePlayerDTO(gamePlayer)).collect(toList()));
+        //info.put("gameplayers", gameplayers(game));
+        info.put("gameplayers", game.getGamePlayers()
+                .stream().map(gamePlayer -> gamePlayerDTO(gamePlayer))
+                .collect(toList()));
+        info.put("scores", game.getGamePlayers()
+                .stream().map(gamePlayer -> scoresDTO(gamePlayer))
+                .collect(toList()));
         return info;
     }
     public Map<String, Object> gamePlayerDTO (GamePlayer gamePlayer){
@@ -42,8 +62,15 @@ public class SalvoController {
     }
     public Map<String, Object> playerDTO (Player player){
         Map<String, Object> info = new LinkedHashMap<>();
-        info.put("id", player.getId());
-        info.put("email", player.getUserName());
+            info.put("id", player.getId());
+            info.put("email", player.getUserName());
+        return info;
+    }
+    public Map<String, Object> scoresDTO(GamePlayer gamePlayer){
+        Map<String, Object> info = new LinkedHashMap<>();
+        //info.put("gp_id", gamePlayer.getId());
+        //info.put("p_id", gamePlayer.getPlayer().getUserName());
+        info.put("score", gamePlayer.getScore());
         return info;
     }
 
@@ -60,7 +87,6 @@ public class SalvoController {
         //GamePlayer oponentGp = currentGp.getGame().getGamePlayers().stream().filter(b -> b.getId() != currentGp.getId()).collect(toList()).get(0);
         return opponentGp;
     }
-
     // Controller for /api/game_view/nn
     @RequestMapping("/game_view/{gamePlayerId}")
     public Map<String, Object> getGameInfo(@PathVariable Long gamePlayerId){
@@ -104,7 +130,6 @@ public class SalvoController {
         info.put("locations", ship.getLocations());
         return info;
     }
-
     public List<Object> salvoesDTO(GamePlayer currentGp){
         List<Object> info = new ArrayList<>();
         //currentGp.getSalvoes().forEach(salvo -> info.add(salvo));
@@ -113,7 +138,6 @@ public class SalvoController {
         getOpponentGp(currentGp).orElse(null).getSalvoes().forEach(salvo -> info.add(salvoDTO(salvo)));
         return info;
     }
-
     public Map<String, Object> salvoDTO(Salvo salvo){
         Map<String, Object> info = new LinkedHashMap<>();
         info.put("turn", salvo.getTurn());
@@ -123,6 +147,4 @@ public class SalvoController {
         info.put("locations", salvo.getLocations());
         return info;
     }
-
-
 }

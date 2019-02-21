@@ -7,6 +7,9 @@ renderTable("salvo", "salvoesLocations");
 //getting the active/current gameplayer id from the "query string" at the end of the URL http://localhost:8080/web/game.html?gp=3
 var gpNumber = window.location.search.split("=")[1]
 console.log("Vamos a hacer Fetch sobre: http://localhost:8080/api/game_view/" + gpNumber);
+console.log("window.location es: " + window.location);
+
+
 
 //================ VUE VAR DECLARATION ===================
 
@@ -15,8 +18,8 @@ var myVue = new Vue({
 	data: {
 		game_view: [],
 	},
-	methods: {},
-	created: function () {
+	methods: {		
+		getGameView: function () {
 		fetch('http://localhost:8080/api/game_view/' + gpNumber, {
 				method: 'GET'
 			})
@@ -32,8 +35,13 @@ var myVue = new Vue({
 			.catch(function (error) {
 				alert(error);
 			});
+		
+	}
+		
 	},
-
+	created: function(){	
+		this.getGameView();
+	},
 	computed: {}
 });
 
@@ -64,6 +72,7 @@ function showSalvoes(salvoes){
 		}
 	});
 }
+
 
 
 
