@@ -15,6 +15,14 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.WebAttributes;
+import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.Arrays;
@@ -27,13 +35,21 @@ public class SalvoApplication extends SpringBootServletInitializer {
 	}
 
 	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+	}
+	//There is another way to define this @Bean:
+	//public PasswordEncoder passwordEncoder() {
+	// return new BCryptPasswordEncoder();
+	// }
+
+	@Bean
 	public CommandLineRunner init(PlayerRepository playerRepository, GameRepository gameRepository, GamePlayerRepository gamePlayerRepository, ShipRepository shipRepository, SalvoRepository salvoRepository, ScoreRepository scoreRepository) {
 		return (args) -> {
-
-			Player p1 = new Player("Jack", "Bauer", "j.bauer@ctu.gov", "24");
-			Player p2 = new Player("Chloe", "O'Brian", "c.obrian@ctu.gov", "42");
-			Player p3 = new Player("Kim", "Bauer", "kim_bauer@gmail.com", "kb");
-			Player p4 = new Player("Tony", "Almeida", "t.almeida@ctu.gov", "mole");
+			Player p1 = new Player("Jack", "Bauer", "j.bauer@ctu.gov", passwordEncoder().encode("24"));
+			Player p2 = new Player("Chloe", "O'Brian", "c.obrian@ctu.gov", passwordEncoder().encode("42"));
+			Player p3 = new Player("Kim", "Bauer", "kim_bauer@gmail.com", passwordEncoder().encode("kb"));
+			Player p4 = new Player("Tony", "Almeida", "t.almeida@ctu.gov", passwordEncoder().encode("mole"));
 			Game g1 = new Game(LocalDateTime.now());
 			Game g2 = new Game(LocalDateTime.of(2019, Month.FEBRUARY, 04, 14, 30));
 			Game g3 = new Game(LocalDateTime.parse("2019-02-07T17:45:00"));
@@ -280,26 +296,66 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
 				//.antMatchers("/admin/**").hasAuthority("ADMIN")
-				.antMatchers("/api/leaderboard").hasRole("USER")
+				.antMatchers("api/game_view/**").hasAuthority("USER");
 				//.antMatchers("/users/**").hasRole("USER")  //USER role can access /users/**
 				//.antMatchers("/admin/**").hasRole("ADMIN")  //ADMIN role can access /admin/**
 				//.antMatchers("/quests/**").permitAll()  // anyone can access /quests/**
 				//.anyRequest().authenticated()  //any other request just need authentication
-				.and()
-				.formLogin();
+				//now we can use the and() to concatenate sections or simply start a new one with: http.formLogin()... as shown below.
+				//.and()
+				//.formLogin()
+		 				//.usernameParameter("username")
+						//.passwordParameter("password")
+						//.loginPage("/api/login");
 
 		http.formLogin()
 				.usernameParameter("username")
 				.passwordParameter("password")
 				.loginPage("/api/login");
+				//The default URL where the Spring Login will POST to trigger the authentication process is /login. It can be overwritten using .loginProcessingUrl()
+				//.loginProcessingUrl("/perform_login")
+				//.defaultSuccessUrl("/homepage.html", true)
+				//.failureUrl("/login.html?error=true")
+				//.failureHandler(authenticationFailureHandler())
 
 		http.logout().logoutUrl("/api/logout");
+		//.deleteCookies("JSESSIONID")
+		//.logoutSuccessHandler(logoutSuccessHandler())
+
+		//If you have an X-frame error you only need to add this line to your WebSecurityConfig class.
+		//So we need to add the below line of code to be able to see the H2-console in our database.
+		http.headers().frameOptions().disable();
+
 		//Be sure to include your login URL in the list of URLs accessible to users who are not logged in!
 		//Don't forget to override the default settings that send HTML forms when unauthenticated access happens and when someone logs in or out.
 		//Be sure to include your login URL in the list of URLs accessible to users who are not logged in!
 		//Don't forget to override the default settings that send HTML forms when unauthenticated access happens and when someone logs in or out.
+
 
 		//See the Resources for example code. Be sure to follow the example for web services. You want Spring
 		// to just sent HTTP success and response codes, no HTML pages.
+
+		// turn off checking for CSRF tokens.CSRF tokens are disabled because supporting them requires a bit of work, and
+		// this kind of attack is more typical with regular web page browsing.
+		http.csrf().disable();
+
+		// if user is not authenticated, just send an authentication failure response
+		http.exceptionHandling().authenticationEntryPoint((req, res, exc) -> res.sendError(HttpServletResponse.SC_UNAUTHORIZED));
+
+		// if login is successful, just clear the flags asking for authentication
+		http.formLogin().successHandler((req, res, auth) -> clearAuthenticationAttributes(req));
+
+		// if login fails, just send an authentication failure response
+		http.formLogin().failureHandler((req, res, exc) -> res.sendError(HttpServletResponse.SC_UNAUTHORIZED));
+
+		// if logout is successful, just send a success response
+		http.logout().logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler());
+	}
+
+	private void clearAuthenticationAttributes(HttpServletRequest request) {
+		HttpSession session = request.getSession(false);
+		if (session != null) {
+			session.removeAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
+		}
 	}
 }

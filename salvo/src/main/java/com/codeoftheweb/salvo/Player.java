@@ -32,10 +32,10 @@ public class Player {
 
         //CONSTRUCTOR
     public Player(){}
-    public Player(String first, String last, String userName, String password)
+    public Player(String firstName, String lastName, String userName, String password)
     {
-        this.firstName = first;
-        this.lastName = last;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.userName = userName;
         this.password = password;
     }

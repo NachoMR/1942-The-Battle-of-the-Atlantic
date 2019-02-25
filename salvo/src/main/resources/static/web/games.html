@@ -11,30 +11,67 @@
 <body>
 	<div id="app" class="container">
 		<div class="text-center">
-			<h1>Salvo Stats!</h1>			
+			<h1>Salvo Stats!</h1>
 			<hr>
 		</div>
-		<form>
-			<div class="row">
-				<!--				<div class="col-sm-4">-->
-				<label>Email:
-					<input type="email" name="email" placeholder="newplayer@hotmail.com"></label>
-				<!--				</div>-->
-				<!--				<div class="col-sm-3">-->
-				<label>Password:
-					<input type="text" name="password" placeholder="password"></label>
+
+		<div class="row">
+			<div class="text-center" v-if="successfulLogIn == false && logInVisible">
+				<form>
+					<label>Email:
+						<input type="email" name="email" placeholder="newPlayer@hotmail.com" v-model="existingUserInput.username"></label>
+					<label>Password:
+						<input type="text" name="password" placeholder="password" v-model="existingUserInput.password"></label>
+					<div>
+						<button type="button" name="login" v-on:click="postExistingUser">
+							Log In
+						</button>
+						<span>or</span>
+						<button type="button" name="toggleToSignUp" v-on:click="toggle()">
+							Sign Up
+						</button>
+					</div>
+				</form>
 			</div>
-			<div class="row">
-				<!--				</div>-->
-				<!--				<div>-->
-				<button type="submit" name="signup" v-on:click="signUp()">
-					Sign Up
-				</button>
-				<button type="submit" name="login" v-on:click="logIn()">
-					Log In
+			<div class="text-center" v-else-if="successfulLogIn == false && !logInVisible">
+				<form>
+					<label>First Name:
+						<input type="text" name="firstName" placeholder="first name"></label>
+					<label>Last Name:
+						<input type="text" name="lastName" placeholder="last name"></label>
+					<label>Email:
+						<input type="email" name="email" placeholder="newPlayer@hotmail.com"></label>
+					<label>Password:
+						<input type="text" name="password" placeholder="password"></label>
+					<div>
+						<button type="button" name="signup" v-on:click="">
+							Sign Up
+						</button>
+						<span>or</span>
+						<button type="button" name="toggleToLogIn" v-on:click="toggle()">
+							Log In
+						</button>
+					</div>
+				</form>
+			</div>
+			<div class="text-center" v-else>
+				<p>
+					Logged In: {{gamesJson.logged_player}}
+				</p>
+
+				<button type="button" name="logout" v-on:click="postLogOut">
+					Log Out
 				</button>
 			</div>
-		</form>
+		</div>
+
+		<!--		<div v-if="gamesJson.logged_player &&  gamesJson.logged_player !== 'guest'">-->
+
+
+
+
+
+
 		<hr>
 		<div class="row">
 			<div class="col-sm-5 text-center">
@@ -48,9 +85,9 @@
 						</tr>
 					</thead>
 					<tbody>
-						<tr v-for="game in games">
+						<tr v-for="game in gamesJson.games">
 							<td>{{game.id}}</td>
-							<td v-for="gameplayer in autoComplete(game.gameplayers)">{{gameplayer.player.email}}</td>
+							<td v-for="gameplayer in autoComplete(game.gameplayers)">{{gameplayer.player.email.split("@")[0]}}</td>
 							<td>{{gameOutcome(game)}}</td>
 						</tr>
 					</tbody>
@@ -72,7 +109,7 @@
 					</thead>
 					<tbody>
 						<tr v-for="leader in leaderboard">
-							<td>{{leader.name}}</td>
+							<td>{{leader.name.split("@")[0]}}</td>
 							<td>{{leader.won.length + leader.lost.length + leader.tied.length}}</td>
 							<td>{{leader.won.length}}</td>
 							<td>{{leader.lost.length}}</td>

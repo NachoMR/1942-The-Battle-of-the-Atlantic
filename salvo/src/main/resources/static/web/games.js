@@ -1,12 +1,32 @@
 //================ VUE VAR DECLARATION ===================
+/*
+j.bauer@ctu.gov				24
+c.obrian@ctu.gov			42
+kim_bauer@gmail.com		kb
+t.almeida@ctu.gov			mole
+*/
+
+var ourData = {
+    username: "kim_bauer@gmail.com",
+    password: "kb"
+};
+
+var newPlayer = {
+	firstName: "Paco",
+	lastName: "Leon",
+	userName: "abcd@gmail.com",
+	password: "PL1984"
+};
 
 var myVue = new Vue({
 	el: "#app",
 	data: {
-		games: [],
-		leaderboard: []
-		//gameplayers: []
-		//leaderboard: []		
+		gamesJson: {},
+		leaderboard: [],
+		existingUserInput: {username: "", password: ""},
+		newUserInput: {firstName: "", lastName: "", userName: "", password: ""}		,
+		//logged: "false",
+		logInVisible: true
 	},
 	methods: {
 		autoComplete: function(arg){
@@ -34,7 +54,11 @@ var myVue = new Vue({
 			else{
 				return "Tied"
 			}
-	},
+	},		
+		toggle: function(){
+			this.logInVisible = !this.logInVisible;
+			console.log("logInVisible: " + this.logInVisible);
+		},		
 		getGamesInfo: function(){
 				fetch('/api/games', {
 				method: 'GET'
@@ -43,12 +67,11 @@ var myVue = new Vue({
 				return response.json();
 				//console.log("First .then() works!");
 			})
-			.then(function (games) {
-				console.log(JSON.stringify(games));
-				//console.log(games);
+			.then(function (gamesJson) {
+				//console.log(JSON.stringify(gamesJson));
+				//console.log(gamesJson);
 				//console.log("Second .then() works!");
-				myVue.games = games;
-				//myVue.gameplayers = games.gameplayers;
+				myVue.gamesJson = gamesJson;
 			}).catch(function (error) {
 				alert(error);
 				//console.log("Error during fetch" + error.message)
@@ -63,7 +86,7 @@ var myVue = new Vue({
 				//console.log("First .then() works!");
 			})
 			.then(function (leaderboard) {
-				console.log("Leaderboard Json: " + JSON.stringify(leaderboard));
+				//console.log("Leaderboard Json: " + JSON.stringify(leaderboard));
 				//console.log(leaderboard);
 				//console.log("Second .then() works!");
 				myVue.leaderboard = leaderboard;
@@ -73,39 +96,95 @@ var myVue = new Vue({
 				//console.log("Error during fetch" + error.message)
 			});
 		},
-		signUp: function(){
-			console.log("signUp method running");
+		postExistingUser: function(){
+			fetch('/api/login', {
+                credentials: 'include',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        method: 'POST',
+        body: getBody(this.existingUserInput)
+    })
+    .then(function (data) {
+        console.log('Request success: ', data);
+				window.location.reload();
+    })
+    .catch(function (error) {
+        console.log('Request failure: ', error);
+				alert("Please enter your user details or Sign Up as a new user");
+    });
 		},
-		logIn: function(){
-			console.log("logIn method running");
-		}		
+		postNewUser: function(){
+			fetch('/api/players', {
+                credentials: 'include',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        method: 'POST',
+        body: getBody(newPlayer)
+    })
+    .then(function (data) {
+        console.log('Request success: ', data);
+    })
+    .catch(function (error) {
+        console.log('Request failure: ', error);
+    });
+		},
+		postLogOut: function(){
+			fetch('/api/logout', {
+                credentials: 'include',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        method: 'POST',
+        //body: getBody(this.existingUserInput)
+    })
+    .then(function (data) {
+        console.log('Request success: ', data);
+				window.location.reload();
+    })
+    .catch(function (error) {
+        console.log('Request failure: ', error);
+    });
+		}
 	},
-	created: function () {	
+	created: function () {
 		this.getGamesInfo();
-		this.getLeaderBoardInfo();		
+		this.getLeaderBoardInfo();
 	},
-	computed: {}
+	computed: {
+		successfulLogIn: function(){
+			if(this.gamesJson.logged_player == "guest"){
+				return false;
+			}
+			else{
+				return true;
+			}
+		}
+	}	
 });
 
 
 //myVue.getGames();
+//myVue.postUser();
+//myVue.postNewUser();
 
 
 // ====================== FUNCTIONS ======================
 
 
-
-
-/*
-function leaderboard(){
-	var leaderboard = [
-		{name: ???,
-		total: ???,
-		won: ???,}
-	];
-	
+function getBody(json) {
+    var body = [];
+    for (var key in json) {
+        var encKey = encodeURIComponent(key);
+        var encVal = encodeURIComponent(json[key]);
+        body.push(encKey + "=" + encVal);
+    }
+    return body.join("&");
 }
-*/
+
+
+
 
 
 

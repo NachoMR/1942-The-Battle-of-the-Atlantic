@@ -1,9 +1,14 @@
 package com.codeoftheweb.salvo;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.*;
 import static java.util.stream.Collectors.toList;
 
@@ -18,6 +23,12 @@ public class SalvoController {
     private GamePlayerRepository gamePlayerRepo;
     @Autowired
     private PlayerRepository playerRepo;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+
+
+
 
 
     // Controller for /api/leaderboard
@@ -37,9 +48,23 @@ public class SalvoController {
 
     // Controller for /api/games
     @RequestMapping("/games")
-    public List<Map> getGames() {
-         return gameRepo.findAll().stream()
-                 .map(game -> gameDTO(game)).collect(toList());
+    public Map<String, Object> getGames(Authentication authentication){
+        Map<String, Object> info = new LinkedHashMap<>();
+        if(!isGuest(authentication)) {
+            info.put("logged_player", currentUsertDTO(getLoggedUser(authentication)));
+        }
+        else{
+            info.put("logged_player", "guest");
+        }
+        info.put("games", gameRepo.findAll().stream()
+                .map(game -> gameDTO(game)).collect(toList()));
+        return info;
+    }
+    public Map<String, Object> currentUsertDTO(Player player){
+        Map<String, Object> info = new LinkedHashMap<>();
+        info.put("id", player.getId());
+        info.put("name", player.getUserName());
+        return info;
     }
     public Map<String, Object> gameDTO (Game game){
         Map<String, Object> info = new LinkedHashMap<>();
@@ -72,6 +97,13 @@ public class SalvoController {
         //info.put("p_id", gamePlayer.getPlayer().getUserName());
         info.put("score", gamePlayer.getScore());
         return info;
+    }
+    public Player getLoggedUser(Authentication authentication) {
+        return playerRepo.findByUserName(authentication.getName());
+    }
+    private boolean isGuest(Authentication authentication) {
+        return authentication == null || authentication instanceof AnonymousAuthenticationToken;
+
     }
 
     public Optional<GamePlayer> getOpponentGp(GamePlayer currentGp){
@@ -147,4 +179,25 @@ public class SalvoController {
         info.put("locations", salvo.getLocations());
         return info;
     }
+
+    //Java-2 Task-1 Point-5 Method for adding new Player...
+    @RequestMapping(path = "/players", method = RequestMethod.POST)
+    public ResponseEntity<Map<String, Object>> createUser(@RequestParam String firstName, @RequestParam String lastName, @RequestParam String userName, @RequestParam String password) {
+        if (firstName.isEmpty() || lastName.isEmpty() || userName.isEmpty() || password.isEmpty()) {
+            return new ResponseEntity<>(makeMap("error", "Missing Data!, please Enter all four fields"), HttpStatus.FORBIDDEN);
+        }
+        Player player = playerRepo.findByUserName(userName);
+        if (player != null) {
+            return new ResponseEntity<>(makeMap("error", "UserName already exists"), HttpStatus.CONFLICT);
+        }
+        Player newPlayer = playerRepo.save(new Player(firstName, lastName, userName, passwordEncoder.encode(password)));
+        return new ResponseEntity<>(makeMap("id", newPlayer.getUserName()), HttpStatus.CREATED);
+    }
+
+    private Map<String, Object> makeMap(String key, Object value) {
+        Map<String, Object> map = new HashMap<>();
+        map.put(key, value);
+        return map;
+    }
+
 }
