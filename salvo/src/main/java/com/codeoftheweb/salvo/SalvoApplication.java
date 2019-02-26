@@ -309,7 +309,7 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 						//.loginPage("/api/login");
 
 		http.formLogin()
-				.usernameParameter("username")
+				.usernameParameter("userName")
 				.passwordParameter("password")
 				.loginPage("/api/login");
 				//The default URL where the Spring Login will POST to trigger the authentication process is /login. It can be overwritten using .loginProcessingUrl()

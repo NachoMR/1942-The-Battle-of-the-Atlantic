@@ -6,27 +6,15 @@ kim_bauer@gmail.com		kb
 t.almeida@ctu.gov			mole
 */
 
-var ourData = {
-    username: "kim_bauer@gmail.com",
-    password: "kb"
-};
-
-var newPlayer = {
-	firstName: "Paco",
-	lastName: "Leon",
-	userName: "abcd@gmail.com",
-	password: "PL1984"
-};
-
 var myVue = new Vue({
 	el: "#app",
 	data: {
 		gamesJson: {},
 		leaderboard: [],
-		existingUserInput: {username: "", password: ""},
-		newUserInput: {firstName: "", lastName: "", userName: "", password: ""}		,
-		//logged: "false",
-		logInVisible: true
+		existingUserInput: {userName: "", password: ""},
+		newUserInput: {firstName: "", lastName: "", userName: "", password: ""},
+		logInVisible: true,
+		auth: false
 	},
 	methods: {
 		autoComplete: function(arg){
@@ -57,7 +45,7 @@ var myVue = new Vue({
 	},		
 		toggle: function(){
 			this.logInVisible = !this.logInVisible;
-			console.log("logInVisible: " + this.logInVisible);
+			//console.log("logInVisible: " + this.logInVisible);
 		},		
 		getGamesInfo: function(){
 				fetch('/api/games', {
@@ -72,6 +60,10 @@ var myVue = new Vue({
 				//console.log(gamesJson);
 				//console.log("Second .then() works!");
 				myVue.gamesJson = gamesJson;
+					if(myVue.gamesJson.logged_player !== 'guest'){
+						myVue.auth = true
+					}
+					
 			}).catch(function (error) {
 				alert(error);
 				//console.log("Error during fetch" + error.message)
@@ -95,41 +87,58 @@ var myVue = new Vue({
 				alert(error);
 				//console.log("Error during fetch" + error.message)
 			});
-		},
-		postExistingUser: function(){
+		},		
+		postUser: function(arg){
+			if(arg.userName == "" || arg.password == ""){
+				alert("Please enter your user details or Sign Up as a new user");
+			}
+			else{
 			fetch('/api/login', {
                 credentials: 'include',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
         },
         method: 'POST',
-        body: getBody(this.existingUserInput)
+        body: getBody(arg)
     })
     .then(function (data) {
         console.log('Request success: ', data);
-				window.location.reload();
+				myVue.auth = true;
+				myVue.getGamesInfo()
+				alert("Log In Status: " + data.status);
+				//window.location.reload();
     })
     .catch(function (error) {
         console.log('Request failure: ', error);
-				alert("Please enter your user details or Sign Up as a new user");
     });
-		},
-		postNewUser: function(){
+			}
+		},		
+		postCreateUser: function(){
+			
+			//first fetch is for creating the new user
 			fetch('/api/players', {
                 credentials: 'include',
         headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
+            'Content-Type': 'application/json'
         },
         method: 'POST',
-        body: getBody(newPlayer)
+        body: JSON.stringify(myVue.newUserInput)
     })
     .then(function (data) {
         console.log('Request success: ', data);
+				alert("Log In Status: " + data.status);
+				this.postUser(newUserInput);
+				//window.location.reload();
     })
     .catch(function (error) {
         console.log('Request failure: ', error);
     });
-		},
+		
+		//second fetch is for authentication of the this new user
+		
+			
+			
+	},		
 		postLogOut: function(){
 			fetch('/api/logout', {
                 credentials: 'include',
@@ -141,6 +150,7 @@ var myVue = new Vue({
     })
     .then(function (data) {
         console.log('Request success: ', data);
+				alert("Log In Status: " + data.status);
 				window.location.reload();
     })
     .catch(function (error) {
@@ -153,32 +163,40 @@ var myVue = new Vue({
 		this.getLeaderBoardInfo();
 	},
 	computed: {
-		successfulLogIn: function(){
-			if(this.gamesJson.logged_player == "guest"){
-				return false;
-			}
-			else{
-				return true;
-			}
+		successfulLogIn: function(){			
+			return this.gamesJson.logged_player == "guest";			
 		}
-	}	
+	}
 });
 
 
 //myVue.getGames();
 //myVue.postUser();
-//myVue.postNewUser();
+//myVue.postCreateUser();
 
 
 // ====================== FUNCTIONS ======================
 
-
+/*
 function getBody(json) {
     var body = [];
     for (var key in json) {
         var encKey = encodeURIComponent(key);
         var encVal = encodeURIComponent(json[key]);
         body.push(encKey + "=" + encVal);
+    }
+    return body.join("&");
+}
+*/
+
+function getBody(json) {
+    var body = [];
+    for (var key in json) {
+			if(key == 'userName' || key == 'password'){
+        var encKey = encodeURIComponent(key);
+        var encVal = encodeURIComponent(json[key]);
+        body.push(encKey + "=" + encVal);
+			}
     }
     return body.join("&");
 }

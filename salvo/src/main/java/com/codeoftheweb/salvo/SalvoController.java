@@ -5,12 +5,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.*;
 import static java.util.stream.Collectors.toList;
+
 
 @RestController
 @RequestMapping("/api")
@@ -25,10 +24,6 @@ public class SalvoController {
     private PlayerRepository playerRepo;
     @Autowired
     private PasswordEncoder passwordEncoder;
-
-
-
-
 
 
     // Controller for /api/leaderboard
@@ -180,17 +175,18 @@ public class SalvoController {
         return info;
     }
 
-    //Java-2 Task-1 Point-5 Method for adding new Player...
+    // Controller for /api/players (Method for adding new Player...)
     @RequestMapping(path = "/players", method = RequestMethod.POST)
-    public ResponseEntity<Map<String, Object>> createUser(@RequestParam String firstName, @RequestParam String lastName, @RequestParam String userName, @RequestParam String password) {
-        if (firstName.isEmpty() || lastName.isEmpty() || userName.isEmpty() || password.isEmpty()) {
+    public ResponseEntity<Map<String, Object>> createUser(@RequestBody Player player) {
+        if (player.getFirstName().isEmpty() || player.getLastName().isEmpty() || player.getUserName().isEmpty() || player.getPassword().isEmpty()) {
             return new ResponseEntity<>(makeMap("error", "Missing Data!, please Enter all four fields"), HttpStatus.FORBIDDEN);
         }
-        Player player = playerRepo.findByUserName(userName);
-        if (player != null) {
+
+        if ( playerRepo.findByUserName(player.getUserName()) != null) {
             return new ResponseEntity<>(makeMap("error", "UserName already exists"), HttpStatus.CONFLICT);
         }
-        Player newPlayer = playerRepo.save(new Player(firstName, lastName, userName, passwordEncoder.encode(password)));
+        player.setPassword(passwordEncoder.encode(player.getPassword()));
+        Player newPlayer = playerRepo.save(player);
         return new ResponseEntity<>(makeMap("id", newPlayer.getUserName()), HttpStatus.CREATED);
     }
 

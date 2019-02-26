@@ -12,65 +12,59 @@
 	<div id="app" class="container">
 		<div class="text-center">
 			<h1>Salvo Stats!</h1>
-			<hr>
 		</div>
+		<hr>
 
-		<div class="row">
-			<div class="text-center" v-if="successfulLogIn == false && logInVisible">
-				<form>
-					<label>Email:
-						<input type="email" name="email" placeholder="newPlayer@hotmail.com" v-model="existingUserInput.username"></label>
-					<label>Password:
-						<input type="text" name="password" placeholder="password" v-model="existingUserInput.password"></label>
+		<div class="text-center" v-if="!auth  &&  logInVisible">
+			<form>
+				<label>Email:
+					<input type="email" name="email" placeholder="newPlayer@hotmail.com" v-model="existingUserInput.userName"></label>
+				<label>Password:
+					<input type="password" name="password" placeholder="password" v-model="existingUserInput.password"></label>
+				<div>
+					<button type="button" name="login" v-on:click="postUser(existingUserInput)">
+						Log In
+					</button>
 					<div>
-						<button type="button" name="login" v-on:click="postExistingUser">
-							Log In
-						</button>
-						<span>or</span>
+						<span>Don't have an account?</span>
 						<button type="button" name="toggleToSignUp" v-on:click="toggle()">
 							Sign Up
 						</button>
 					</div>
-				</form>
-			</div>
-			<div class="text-center" v-else-if="successfulLogIn == false && !logInVisible">
-				<form>
-					<label>First Name:
-						<input type="text" name="firstName" placeholder="first name"></label>
-					<label>Last Name:
-						<input type="text" name="lastName" placeholder="last name"></label>
-					<label>Email:
-						<input type="email" name="email" placeholder="newPlayer@hotmail.com"></label>
-					<label>Password:
-						<input type="text" name="password" placeholder="password"></label>
+				</div>
+			</form>
+		</div>
+		<div class="text-center" v-else-if="!auth && !logInVisible">
+			<form>
+				<label>First Name:
+					<input type="text" name="firstName" placeholder="first name" v-model="newUserInput.firstName"></label>
+				<label>Last Name:
+					<input type="text" name="lastName" placeholder="last name" v-model="newUserInput.lastName"></label>
+				<label>Email:
+					<input type="email" name="email" placeholder="newPlayer@hotmail.com" v-model="newUserInput.userName"></label>
+				<label>Password:
+					<input type="password" name="password" placeholder="password" v-model="newUserInput.password"></label>
+				<div>
+					<button type="button" name="signup" v-on:click="postCreateUser">
+						Sign Up
+					</button>
 					<div>
-						<button type="button" name="signup" v-on:click="">
-							Sign Up
-						</button>
-						<span>or</span>
+						<span>Use your existing account</span>
 						<button type="button" name="toggleToLogIn" v-on:click="toggle()">
 							Log In
 						</button>
 					</div>
-				</form>
-			</div>
-			<div class="text-center" v-else>
-				<p>
-					Logged In: {{gamesJson.logged_player}}
-				</p>
-
-				<button type="button" name="logout" v-on:click="postLogOut">
-					Log Out
-				</button>
-			</div>
+				</div>
+			</form>
 		</div>
-
-		<!--		<div v-if="gamesJson.logged_player &&  gamesJson.logged_player !== 'guest'">-->
-
-
-
-
-
+		<div class="text-center" v-if="auth">
+			<p>
+				Logged In: {{gamesJson.logged_player.name }}
+			</p>
+			<button type="button" name="logout" v-on:click="postLogOut">
+				Log Out
+			</button>
+		</div>
 
 		<hr>
 		<div class="row">
@@ -119,7 +113,6 @@
 				</table>
 			</div>
 		</div>
-
 	</div>
 
 
