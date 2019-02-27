@@ -59,7 +59,7 @@
 		</div>
 		<div class="text-center" v-if="auth">
 			<p>
-				Logged In: {{gamesJson.logged_player.name }}
+				Logged In: {{ gamesJson.logged_player.name }}
 			</p>
 			<button type="button" name="logout" v-on:click="postLogOut">
 				Log Out
@@ -76,19 +76,35 @@
 							<th>Game No</th>
 							<th colspan="2">Players</th>
 							<th>Winner (if any)</th>
+							<th v-if="auth">Action</th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr v-for="game in gamesJson.games">
 							<td>{{game.id}}</td>
-							<td v-for="gameplayer in autoComplete(game.gameplayers)">{{gameplayer.player.email.split("@")[0]}}</td>
-							<td>{{gameOutcome(game)}}</td>
+							<td v-for="gameplayer in game.gameplayers">{{gameplayer.player.email.split("@")[0]}}</td>
+							<td v-if="game.gameplayers.length == 1">Waiting...</td>							
+							<td><span>{{gameOutcome(game)}}</span></td>
+							
+							<td v-if="auth">
+								
+								<a v-if="checkJoinGame(game)" v-bind:href=joinGame() class="btn btn-outline-primary">Join Game</a>
+								
+								<a v-else-if="checkContinueGame(game)" v-bind:href=continueGame(game) class="btn btn-outline-primary">Continue Game</a>
+								
+								<a v-else v-bind:href=gameOver() class="btn btn-outline-primary">Game Over</a>
+								
+							</td>	
 						</tr>
 					</tbody>
 				</table>
 			</div>
+			
+			<!--
 			<div class="col-sm-1">
 			</div>
+			-->
+			
 			<div class="col-sm-5 text-center">
 				<h3>Leaderboard</h3>
 				<table class="table table-bordered text-center">
@@ -112,6 +128,7 @@
 					</tbody>
 				</table>
 			</div>
+			
 		</div>
 	</div>
 

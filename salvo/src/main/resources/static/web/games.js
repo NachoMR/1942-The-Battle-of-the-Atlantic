@@ -14,18 +14,9 @@ var myVue = new Vue({
 		existingUserInput: {userName: "", password: ""},
 		newUserInput: {firstName: "", lastName: "", userName: "", password: ""},
 		logInVisible: true,
-		auth: false
+		auth: false	
 	},
 	methods: {
-		autoComplete: function(arg){
-			if(arg.length > 1){
-				return arg;
-			}
-			else{
-				arg.push({"id":"N/A","player":{"id":"N/A","email":"N/A"}});
-				return arg;
-			}
-			},
 		gameOutcome: function(game){
 			if(game.scores.length == 1){
 				return "Not started"
@@ -103,9 +94,11 @@ var myVue = new Vue({
     })
     .then(function (data) {
         console.log('Request success: ', data);
-				myVue.auth = true;
-				myVue.getGamesInfo()
 				alert("Log In Status: " + data.status);
+				myVue.auth = true;
+				//we want to refresh the page:
+				myVue.getGamesInfo();
+				myVue.getLeaderBoardInfo();				
 				//window.location.reload();
     })
     .catch(function (error) {
@@ -127,16 +120,14 @@ var myVue = new Vue({
     .then(function (data) {
         console.log('Request success: ', data);
 				alert("Log In Status: " + data.status);
-				this.postUser(newUserInput);
+				//second fetch is for authentication of the this new user
+				this.postUser(this.newUserInput);
 				//window.location.reload();
     })
     .catch(function (error) {
         console.log('Request failure: ', error);
     });
 		
-		//second fetch is for authentication of the this new user
-		
-			
 			
 	},		
 		postLogOut: function(){
@@ -151,23 +142,58 @@ var myVue = new Vue({
     .then(function (data) {
         console.log('Request success: ', data);
 				alert("Log In Status: " + data.status);
-				window.location.reload();
+				myVue.auth = false;
+				//window.location.reload();
     })
     .catch(function (error) {
         console.log('Request failure: ', error);
     });
+		},
+		checkJoinGame: function(game){
+			if(game.gameplayers.length == 1){
+			return true
+				 }
+		},
+		checkContinueGame: function(game){
+			if(game.scores[0].score == null || game.scores[1].score == null){
+			return true
+				 }
+		},		
+		goToGame: function(){
+			console.log("Going to this game...");			
+		},		
+		joinGame: function(){
+			
+			
+			
+			return "http://google.com"
+		},
+		continueGame: function(game){
+			var gp = "";
+			for(var i = 0; i < game.gameplayers.length; i++){
+				if(game.gameplayers[i].player.id == this.gamesJson.logged_player.pid){
+					gp = game.gameplayers[i].id;
+					break;
+				}
+			}
+			return "/web/game.html?gp=" + gp
+		},
+		gameOver: function(){
+			return "/web/games.html"
 		}
+		
 	},
 	created: function () {
 		this.getGamesInfo();
 		this.getLeaderBoardInfo();
 	},
 	computed: {
-		successfulLogIn: function(){			
+		successfulLogIn: function(){	
 			return this.gamesJson.logged_player == "guest";			
 		}
 	}
 });
+
 
 
 //myVue.getGames();
@@ -176,18 +202,6 @@ var myVue = new Vue({
 
 
 // ====================== FUNCTIONS ======================
-
-/*
-function getBody(json) {
-    var body = [];
-    for (var key in json) {
-        var encKey = encodeURIComponent(key);
-        var encVal = encodeURIComponent(json[key]);
-        body.push(encKey + "=" + encVal);
-    }
-    return body.join("&");
-}
-*/
 
 function getBody(json) {
     var body = [];
@@ -200,17 +214,5 @@ function getBody(json) {
     }
     return body.join("&");
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 

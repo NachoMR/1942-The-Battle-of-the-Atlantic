@@ -57,7 +57,7 @@ public class SalvoController {
     }
     public Map<String, Object> currentUsertDTO(Player player){
         Map<String, Object> info = new LinkedHashMap<>();
-        info.put("id", player.getId());
+        info.put("pid", player.getId());
         info.put("name", player.getUserName());
         return info;
     }
@@ -65,13 +65,20 @@ public class SalvoController {
         Map<String, Object> info = new LinkedHashMap<>();
         info.put("id", game.getId());
         info.put("created", game.getCreated());
-        //info.put("gameplayers", gameplayers(game));
+        info.put("players", game.getGamePlayers().stream().map(gamePlayer -> playersDTO(gamePlayer)).collect(toList()));
         info.put("gameplayers", game.getGamePlayers()
                 .stream().map(gamePlayer -> gamePlayerDTO(gamePlayer))
                 .collect(toList()));
         info.put("scores", game.getGamePlayers()
                 .stream().map(gamePlayer -> scoresDTO(gamePlayer))
                 .collect(toList()));
+        return info;
+    }
+    public Map<String, Object> playersDTO (GamePlayer gamePlayer){
+        Map<String, Object> info = new LinkedHashMap<>();
+        info.put("gpid", gamePlayer.getId());
+        info.put("pid", gamePlayer.getPlayer().getId());
+        info.put("name", gamePlayer.getPlayer().getUserName());
         return info;
     }
     public Map<String, Object> gamePlayerDTO (GamePlayer gamePlayer){
@@ -117,6 +124,20 @@ public class SalvoController {
     // Controller for /api/game_view/nn
     @RequestMapping("/game_view/{gamePlayerId}")
     public Map<String, Object> getGameInfo(@PathVariable Long gamePlayerId){
+        //************************
+        //************************
+        //************************
+        /*
+        if(!isGuest(authentication)) {
+            info.put("logged_player", currentUsertDTO(getLoggedUser(authentication)));
+        }
+        else{
+            info.put("logged_player", "guest");
+        }
+        */
+        //************************
+        //************************
+        //************************
         Map<String, Object> info = new LinkedHashMap<>();
         GamePlayer currentGp = gamePlayerRepo.findById(gamePlayerId).orElse(null);
         // alternatively:
@@ -182,7 +203,7 @@ public class SalvoController {
             return new ResponseEntity<>(makeMap("error", "Missing Data!, please Enter all four fields"), HttpStatus.FORBIDDEN);
         }
 
-        if ( playerRepo.findByUserName(player.getUserName()) != null) {
+        if (playerRepo.findByUserName(player.getUserName()) != null) {
             return new ResponseEntity<>(makeMap("error", "UserName already exists"), HttpStatus.CONFLICT);
         }
         player.setPassword(passwordEncoder.encode(player.getPassword()));
