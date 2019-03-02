@@ -5,8 +5,8 @@ renderTable("ship", "shipLocations");
 renderTable("salvo", "salvoesLocations");
 
 //getting the active/current gameplayer id from the "query string" at the end of the URL http://localhost:8080/web/game.html?gp=3
-var gpNumber = window.location.search.split("=")[1]
-console.log("Vamos a hacer Fetch sobre: http://localhost:8080/api/game_view/" + gpNumber);
+var gp = window.location.search.split("=")[1]
+console.log("Vamos a hacer Fetch sobre: http://localhost:8080/api/game_view/" + gp);
 console.log("window.location es: " + window.location);
 
 
@@ -18,19 +18,28 @@ var myVue = new Vue({
 	data: {
 		game_view: [],
 	},
-	methods: {		
+	methods: {
+		goToHome: function(){
+			document.location.href="/web/games.html"
+		},
 		getGameView: function () {
-		fetch('http://localhost:8080/api/game_view/' + gpNumber, {
+		fetch('http://localhost:8080/api/game_view/' + gp, {
 				method: 'GET'
 			})
 			.then(function (response) {
 				return response.json();
 			})
 			.then(function (game_view) {
+				if(game_view.error){
+					alert(game_view.error);
+					window.location.href = "games.html";
+				}
+			else{
 				console.log(game_view);
 				myVue.game_view = game_view;
 				showShips(myVue.game_view.ships);
-				showSalvoes(myVue.game_view.salvoes);			
+				showSalvoes(myVue.game_view.salvoes);
+				}
 			})
 			.catch(function (error) {
 				alert(error);
@@ -61,7 +70,7 @@ function showShips(ships) {
 function showSalvoes(salvoes){
 	//this functions will show/render salvoes for currentGp and his/her opponentGp
 	salvoes.forEach(salvo => {
-		if(salvo.gamePlayer == gpNumber){
+		if(salvo.gamePlayer == gp){
 			//console.log("imprimiendo salvoes del currentGp");
 			//salvo.locations.forEach(location => console.log(location + " " + typeof(location)));			
 			salvo.locations.forEach(location => document.getElementById("salvo" + location).classList.add("salvoes"));

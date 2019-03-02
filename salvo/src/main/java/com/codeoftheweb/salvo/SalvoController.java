@@ -7,6 +7,8 @@ import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
 import java.util.*;
 import static java.util.stream.Collectors.toList;
 
@@ -29,23 +31,43 @@ public class SalvoController {
     // Controller for /api/leaderboard
     @RequestMapping("/leaderboard")
     public List<Map> getLeaderboard(){
-        return  playerRepo.findAll().stream().map(player -> playerInfoDTO(player)).collect(toList());
+        return  playerRepo.findAll()
+                .stream()
+                .map(player -> playerInfoDTO(player))
+                //.sorted((b1, b2) -> b2.get("total") - b1.get("total"))
+                .collect(toList());
     }
     public Map<String, Object> playerInfoDTO(Player player){
         Map<String, Object> info = new LinkedHashMap<>();
         info.put("name", player.getUserName());
-        info.put("won", player.getScores().stream().filter(b -> b.getPoints() == 1).collect(toList()));
-        info.put("lost", player.getScores().stream().filter(b -> b.getPoints() == 0).collect(toList()));
-        info.put("tied", player.getScores().stream().filter(b -> b.getPoints() == 0.5).collect(toList()));
-        //info.put("total", player.getScores().stream().filter(b -> b.getPoints() >= 0.0).collect(toList()));
+        info.put("won", player.getScores().stream().filter(b -> b.getPoints() == 1.0).map(b -> b.getPoints()).collect(toList()));
+        info.put("lost", player.getScores().stream().filter(b -> b.getPoints() == 0.0).map(b -> b.getPoints()).collect(toList()));
+        info.put("tied", player.getScores().stream().filter(b -> b.getPoints() == 0.5).map(b -> b.getPoints()).collect(toList()));
+        info.put("total_points", player.getScores().stream().filter(b -> b.getPoints() == 1.0).count() + 0.5 * player.getScores().stream().filter(b -> b.getPoints() == 0.5).count());
+        info.put("total_played", player.getScores().size());
         return info;
     }
 
-    // Controller for /api/games
-    @RequestMapping("/games")
+    @RequestMapping(path = "/games", method = RequestMethod.POST)
+    public ResponseEntity<Map<String, Object>> createGame(Authentication authentication) {
+        if (!isGuest(authentication)) {
+            //getLoggedUser(authentication) brings back the Player who is logged in.
+            Game newGame = new Game(LocalDateTime.now());
+            GamePlayer newGamePlayer = new GamePlayer(newGame, getLoggedUser(authentication));
+            gameRepo.save(newGame);
+            gamePlayerRepo.save(newGamePlayer);
+            return new ResponseEntity<>(makeMap("gpid", newGamePlayer.getId()), HttpStatus.CREATED);
+        }
+        else {
+            //You need to log in!
+            return new ResponseEntity<>(makeMap("error", "You need to Log In, please Enter your email and password"), HttpStatus.UNAUTHORIZED);
+        }
+    }
+    @RequestMapping(path = "/games", method = RequestMethod.GET)
     public Map<String, Object> getGames(Authentication authentication){
         Map<String, Object> info = new LinkedHashMap<>();
         if(!isGuest(authentication)) {
+            //getLoggedUser(authentication) brings back the Player who is logged in.
             info.put("logged_player", currentUsertDTO(getLoggedUser(authentication)));
         }
         else{
@@ -55,6 +77,54 @@ public class SalvoController {
                 .map(game -> gameDTO(game)).collect(toList()));
         return info;
     }
+    @RequestMapping("/game_view/{gamePlayerId}")
+    public Object getGameInfo(@PathVariable Long gamePlayerId, Authentication authentication) {
+        if (!isGuest(authentication)) {
+            //getLoggedUser(authentication) brings back the Player who is logged in.
+            if (getLoggedUser(authentication).getGamePlayers().stream().anyMatch(b -> b.getId() == gamePlayerId)) {
+                //returns the Map<String, Object> we had previously.....
+                Map<String, Object> info = new LinkedHashMap<>();
+                GamePlayer currentGp = gamePlayerRepo.findById(gamePlayerId).orElse(null);
+                // alternatively:
+                // GamePlayer currentGp = gamePlayerRepo.getOne(gamePlayerId);
+                info.put("id", currentGp.getGame().getId());
+                info.put("created", currentGp.getGame().getCreated());
+                info.put("gamePlayers", gamePlayersDTO(currentGp));
+                //if(getOpponentGp(currentGp).orElse(null) != null) {
+                info.put("ships", currentGp.getShips()
+                            .stream()
+                            .map(ship -> shipDetailDTO(ship))
+                            .collect(toList()));
+
+                info.put("salvoes", salvoesDTO(currentGp));
+                //}
+                return info;
+            }
+            else {
+                return new ResponseEntity<>(makeMap("error", "You're very smart but cheating is not permitted"), HttpStatus.UNAUTHORIZED);
+
+            }
+
+        }
+        else {
+            return new ResponseEntity<>(makeMap("error", "You need to Log In, please Enter your email and password"), HttpStatus.UNAUTHORIZED);
+
+        }
+    }
+    @RequestMapping(path = "/players", method = RequestMethod.POST)
+    public ResponseEntity<Map<String, Object>> createUser(@RequestBody Player player) {
+        if (player.getFirstName().isEmpty() || player.getLastName().isEmpty() || player.getUserName().isEmpty() || player.getPassword().isEmpty()) {
+            return new ResponseEntity<>(makeMap("error", "Missing Data!, please Enter all four fields"), HttpStatus.FORBIDDEN);
+        }
+
+        if (playerRepo.findByUserName(player.getUserName()) != null) {
+            return new ResponseEntity<>(makeMap("error", "UserName already exists"), HttpStatus.CONFLICT);
+        }
+        player.setPassword(passwordEncoder.encode(player.getPassword()));
+        Player newPlayer = playerRepo.save(player);
+        return new ResponseEntity<>(makeMap("id", newPlayer.getUserName()), HttpStatus.CREATED);
+    }
+
     public Map<String, Object> currentUsertDTO(Player player){
         Map<String, Object> info = new LinkedHashMap<>();
         info.put("pid", player.getId());
@@ -100,14 +170,61 @@ public class SalvoController {
         info.put("score", gamePlayer.getScore());
         return info;
     }
-    public Player getLoggedUser(Authentication authentication) {
+    public List<Object> gamePlayersDTO(GamePlayer currentGp){
+            List<Object> currentGps = new ArrayList<>();
+            Optional<GamePlayer> oponentGp = getOpponentGp(currentGp);
+            //we only need to add two players to the list of players in this game.
+            currentGps.add(playerDTO(currentGp));
+            if(oponentGp.orElse(null) != null) {
+                currentGps.add(playerDTO(oponentGp.orElse(null)));
+            }
+            return currentGps;
+    }
+    public Map<String, Object> playerDTO(GamePlayer argumentGp){
+            Map<String, Object> info = new LinkedHashMap<>();
+            info.put("id", argumentGp.getId());
+            info.put("player", infoPlayerDTO(argumentGp));
+            return info;
+        }
+    public Map<String, Object> infoPlayerDTO(GamePlayer argumentGp){
+            Map<String, Object> info = new LinkedHashMap<>();
+            info.put("id", argumentGp.getPlayer().getId());
+            info.put("email", argumentGp.getPlayer().getUserName());
+            return info;
+        }
+    public Map<String, Object> shipDetailDTO(Ship ship){
+            Map<String, Object> info = new LinkedHashMap<>();
+            info.put("type", ship.getType());
+            info.put("locations", ship.getLocations());
+            return info;
+        }
+    public List<Object> salvoesDTO(GamePlayer currentGp){
+            List<Object> info = new ArrayList<>();
+            //currentGp.getSalvoes().forEach(salvo -> info.add(salvo));
+            //getOpponentGp(currentGp).orElse(null).getSalvoes().forEach(salvo -> info.add(salvo));
+            currentGp.getSalvoes().forEach(salvo -> info.add(salvoDTO(salvo)));
+            if(getOpponentGp(currentGp).orElse(null) != null) {
+                getOpponentGp(currentGp).orElse(null).getSalvoes().forEach(salvo -> info.add(salvoDTO(salvo)));
+            }
+            return info;
+        }
+    public Map<String, Object> salvoDTO(Salvo salvo){
+            Map<String, Object> info = new LinkedHashMap<>();
+            info.put("turn", salvo.getTurn());
+            info.put("gamePlayer", salvo.getGamePlayer().getId());
+            //alternatively (both ways we shoud get the same Id number:
+            //info.put("gamePlayer", argumentGp.getId());
+            info.put("locations", salvo.getLocations());
+            return info;
+        }
+
+    private Player getLoggedUser(Authentication authentication) {
         return playerRepo.findByUserName(authentication.getName());
     }
     private boolean isGuest(Authentication authentication) {
         return authentication == null || authentication instanceof AnonymousAuthenticationToken;
 
     }
-
     public Optional<GamePlayer> getOpponentGp(GamePlayer currentGp){
         Optional<GamePlayer> opponentGp = currentGp
                 .getGame()
@@ -121,96 +238,6 @@ public class SalvoController {
         //GamePlayer oponentGp = currentGp.getGame().getGamePlayers().stream().filter(b -> b.getId() != currentGp.getId()).collect(toList()).get(0);
         return opponentGp;
     }
-    // Controller for /api/game_view/nn
-    @RequestMapping("/game_view/{gamePlayerId}")
-    public Map<String, Object> getGameInfo(@PathVariable Long gamePlayerId){
-        //************************
-        //************************
-        //************************
-        /*
-        if(!isGuest(authentication)) {
-            info.put("logged_player", currentUsertDTO(getLoggedUser(authentication)));
-        }
-        else{
-            info.put("logged_player", "guest");
-        }
-        */
-        //************************
-        //************************
-        //************************
-        Map<String, Object> info = new LinkedHashMap<>();
-        GamePlayer currentGp = gamePlayerRepo.findById(gamePlayerId).orElse(null);
-        // alternatively:
-        // GamePlayer currentGp = gamePlayerRepo.getOne(gamePlayerId);
-        info.put("id", currentGp.getGame().getId());
-        info.put("created", currentGp.getGame().getCreated());
-        info.put("gamePlayers", gamePlayersDTO(currentGp));
-        info.put("ships", currentGp.getShips()
-        .stream()
-        .map(ship -> shipDetailDTO(ship))
-        .collect(toList()));
-        info.put("salvoes", salvoesDTO(currentGp));
-        return info;
-    }
-    public List<Object> gamePlayersDTO(GamePlayer currentGp){
-        List<Object> currentGamePlayers = new ArrayList<>();
-        Optional<GamePlayer> oponentGp = getOpponentGp(currentGp);
-        //we only need to add two players to the list of players in this game.
-        currentGamePlayers.add(playerDTO(currentGp));
-        currentGamePlayers.add(playerDTO(oponentGp.orElse(null)));
-        return currentGamePlayers;
-    }
-    public Map<String, Object> playerDTO(GamePlayer argumentGp){
-        Map<String, Object> info = new LinkedHashMap<>();
-        info.put("id", argumentGp.getId());
-        info.put("player", infoPlayerDTO(argumentGp));
-        return info;
-    }
-    public Map<String, Object> infoPlayerDTO(GamePlayer argumentGp){
-        Map<String, Object> info = new LinkedHashMap<>();
-        info.put("id", argumentGp.getPlayer().getId());
-        info.put("email", argumentGp.getPlayer().getUserName());
-        return info;
-    }
-    public Map<String, Object> shipDetailDTO(Ship ship){
-        Map<String, Object> info = new LinkedHashMap<>();
-        info.put("type", ship.getType());
-        info.put("locations", ship.getLocations());
-        return info;
-    }
-    public List<Object> salvoesDTO(GamePlayer currentGp){
-        List<Object> info = new ArrayList<>();
-        //currentGp.getSalvoes().forEach(salvo -> info.add(salvo));
-        //getOpponentGp(currentGp).orElse(null).getSalvoes().forEach(salvo -> info.add(salvo));
-        currentGp.getSalvoes().forEach(salvo -> info.add(salvoDTO(salvo)));
-        getOpponentGp(currentGp).orElse(null).getSalvoes().forEach(salvo -> info.add(salvoDTO(salvo)));
-        return info;
-    }
-    public Map<String, Object> salvoDTO(Salvo salvo){
-        Map<String, Object> info = new LinkedHashMap<>();
-        info.put("turn", salvo.getTurn());
-        info.put("gamePlayer", salvo.getGamePlayer().getId());
-        //alternatively (both ways we shoud get the same Id number:
-        //info.put("gamePlayer", argumentGp.getId());
-        info.put("locations", salvo.getLocations());
-        return info;
-    }
-
-    // Controller for /api/players (Method for adding new Player...)
-    @RequestMapping(path = "/players", method = RequestMethod.POST)
-    public ResponseEntity<Map<String, Object>> createUser(@RequestBody Player player) {
-        if (player.getFirstName().isEmpty() || player.getLastName().isEmpty() || player.getUserName().isEmpty() || player.getPassword().isEmpty()) {
-            return new ResponseEntity<>(makeMap("error", "Missing Data!, please Enter all four fields"), HttpStatus.FORBIDDEN);
-        }
-
-        if (playerRepo.findByUserName(player.getUserName()) != null) {
-            return new ResponseEntity<>(makeMap("error", "UserName already exists"), HttpStatus.CONFLICT);
-        }
-        player.setPassword(passwordEncoder.encode(player.getPassword()));
-        Player newPlayer = playerRepo.save(player);
-        return new ResponseEntity<>(makeMap("id", newPlayer.getUserName()), HttpStatus.CREATED);
-    }
-
     private Map<String, Object> makeMap(String key, Object value) {
         Map<String, Object> map = new HashMap<>();
         map.put(key, value);

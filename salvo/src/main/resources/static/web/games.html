@@ -12,6 +12,10 @@
 	<div id="app" class="container">
 		<div class="text-center">
 			<h1>Salvo Stats!</h1>
+			<span>j.bauer@ctu.gov --- 24  ////</span>
+			<span>c.obrian@ctu.gov --- 42  ////</span>
+			<span>kim_bauer@gmail.com --- kb  ////</span>
+			<span>t.almeida@ctu.gov --- mole</span>
 		</div>
 		<hr>
 
@@ -22,7 +26,7 @@
 				<label>Password:
 					<input type="password" name="password" placeholder="password" v-model="existingUserInput.password"></label>
 				<div>
-					<button type="button" name="login" v-on:click="postUser(existingUserInput)">
+					<button type="button" name="login" v-on:click="logInUser(existingUserInput)">
 						Log In
 					</button>
 					<div>
@@ -45,11 +49,11 @@
 				<label>Password:
 					<input type="password" name="password" placeholder="password" v-model="newUserInput.password"></label>
 				<div>
-					<button type="button" name="signup" v-on:click="postCreateUser">
+					<button type="button" name="signup" v-on:click="signUpUser">
 						Sign Up
 					</button>
 					<div>
-						<span>Use your existing account</span>
+						<span>or use your existing account</span>
 						<button type="button" name="toggleToLogIn" v-on:click="toggle()">
 							Log In
 						</button>
@@ -58,14 +62,16 @@
 			</form>
 		</div>
 		<div class="text-center" v-if="auth">
-			<p>
-				Logged In: {{ gamesJson.logged_player.name }}
-			</p>
-			<button type="button" name="logout" v-on:click="postLogOut">
+			<p>Logged In: {{ gamesJson.logged_player.name }}</p>
+			<button type="button" name="logout" v-on:click="logOutUser">
 				Log Out
 			</button>
-		</div>
 
+			<button type="button" name="createGame" v-on:click="createGame()">
+				Create Game
+			</button>
+
+		</div>
 		<hr>
 		<div class="row">
 			<div class="col-sm-5 text-center">
@@ -81,54 +87,60 @@
 					</thead>
 					<tbody>
 						<tr v-for="game in gamesJson.games">
-							<td>{{game.id}}</td>
-							<td v-for="gameplayer in game.gameplayers">{{gameplayer.player.email.split("@")[0]}}</td>
-							<td v-if="game.gameplayers.length == 1">Waiting...</td>							
+							<td>{{"g= " + game.id}}</td>
+							<td v-for="gameplayer in game.gameplayers">{{gameplayer.player.email.split("@")[0] + " gp= " + gameplayer.id}}</td>
+							<td v-if="game.gameplayers.length == 1">Waiting...</td>
 							<td><span>{{gameOutcome(game)}}</span></td>
-							
+
 							<td v-if="auth">
-								
-								<a v-if="checkJoinGame(game)" v-bind:href=joinGame() class="btn btn-outline-primary">Join Game</a>
-								
-								<a v-else-if="checkContinueGame(game)" v-bind:href=continueGame(game) class="btn btn-outline-primary">Continue Game</a>
-								
+
+								<a v-if="visibleJoinGameButton(game)" v-bind:href=joinGame() class="btn btn-outline-primary">Join Game</a>
+
+								<a v-else-if="visibleContinueGameButton(game)" v-bind:href=continueGame(game) class="btn btn-outline-primary">Continue Game</a>
+
 								<a v-else v-bind:href=gameOver() class="btn btn-outline-primary">Game Over</a>
-								
-							</td>	
+
+							</td>
 						</tr>
 					</tbody>
 				</table>
 			</div>
-			
+
 			<!--
 			<div class="col-sm-1">
 			</div>
 			-->
+
 			
+<!--
 			<div class="col-sm-5 text-center">
 				<h3>Leaderboard</h3>
 				<table class="table table-bordered text-center">
 					<thead>
 						<tr>
 							<th>Name</th>
-							<th>Total</th>
+							<th>Played</th>
+							<th>Points</th>
 							<th>Won</th>
-							<th>Lost</th>
 							<th>Tied</th>
+							<th>Lost</th>
 						</tr>
 					</thead>
 					<tbody>
-						<tr v-for="leader in leaderboard">
-							<td>{{leader.name.split("@")[0]}}</td>
-							<td>{{leader.won.length + leader.lost.length + leader.tied.length}}</td>
-							<td>{{leader.won.length}}</td>
-							<td>{{leader.lost.length}}</td>
-							<td>{{leader.tied.length}}</td>
+						<tr v-for="item in sortedLeaderboard">
+							<td>{{item.name.split("@")[0]}}</td>
+							<td>{{item.total_played}}</td>
+							<td>{{item.total_points}}</td>
+							<td>{{item.won.length}}</td>
+							<td>{{item.tied.length}}</td>
+							<td>{{item.lost.length}}</td>
 						</tr>
 					</tbody>
 				</table>
 			</div>
-			
+-->
+
+
 		</div>
 	</div>
 
