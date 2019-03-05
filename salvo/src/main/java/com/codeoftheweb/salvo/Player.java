@@ -28,8 +28,6 @@ public class Player {
     Set<Score> scores = new LinkedHashSet<>();
 
 
-
-
         //CONSTRUCTOR
     public Player(){}
     public Player(String firstName, String lastName, String userName, String password)

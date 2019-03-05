@@ -14,11 +14,12 @@
 		<button type="button" name="goToHome" v-on:click="goToHome()">
 			 &#127968Home
 		</button>
+				
 		<div>
 		
 			<div class="text-center" v-if="game_view.length != 0">
-				<h1>This is {{game_view.gamePlayers[0].player.email.split("@")[0]}} current Game</h1>
-				<h4 v-if="game_view.gamePlayers.length > 1">{{game_view.gamePlayers[0].player.email}} - vs - {{game_view.gamePlayers[1].player.email}}</h4>
+				<h1>This is {{game_view.gamePlayers[0].player.email.split("@")[0]}} current Game (g={{game_view.id}})</h1>
+				<h4 v-if="game_view.gamePlayers.length > 1">{{game_view.gamePlayers[0].player.email.split("@")[0]}} (gp={{game_view.gamePlayers[0].id}}) - vs - {{game_view.gamePlayers[1].player.email.split("@")[0]}} (gp={{game_view.gamePlayers[1].id}})</h4>
 				<h4 v-else>{{game_view.gamePlayers[0].player.email.split("@")[0]}} waiting for opponent...</h4>
 			</div>
 
@@ -26,12 +27,17 @@
 				<!--			<div class="col-sm-1"></div>-->
 				<div class="col-sm text-center">
 					<h4>These are your Ship Locations</h4>
-					<table id="shipLocations" class="playingBoard mx-auto">
+					<table id="shipLocations" class="mx-auto">
 					</table>
 				</div>
-				<div class="col-sm text-center">
+				<div v-if="placeShips" class="col-sm text-center">
+					<h4>Place your Ships</h4>
+					<table class="mx-auto">
+					</table>
+				</div>
+				<div v-if="!placeShips" class="col-sm text-center">
 					<h4>These are your Salvoes</h4>
-					<table id="salvoesLocations" class="playingBoard mx-auto">
+					<table id="salvoesLocations" class="mx-auto">
 					</table>
 				</div>
 				<!--			<div class="col-sm-1"></div>-->
@@ -44,6 +50,7 @@
 	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 	<!--	===== VUE CDN ===== -->
 	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	
 	<!-- ===== BOOTSTRAP CDN SCRIPTS ===== -->
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 

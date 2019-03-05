@@ -8,6 +8,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.websocket.server.PathParam;
 import java.time.LocalDateTime;
 import java.util.*;
 import static java.util.stream.Collectors.toList;
@@ -17,7 +18,7 @@ import static java.util.stream.Collectors.toList;
 @RequestMapping("/api")
 public class SalvoController {
 
-    // All @Autowired repositories req'd
+    // All @Autowired req'd
     @Autowired
     private GameRepository gameRepo;
     @Autowired
@@ -25,10 +26,11 @@ public class SalvoController {
     @Autowired
     private PlayerRepository playerRepo;
     @Autowired
+    private ShipRepository shipRepo;
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
 
-    // Controller for /api/leaderboard
     @RequestMapping("/leaderboard")
     public List<Map> getLeaderboard(){
         return  playerRepo.findAll()
@@ -47,6 +49,36 @@ public class SalvoController {
         info.put("total_played", player.getScores().size());
         return info;
     }
+
+    @RequestMapping(path = "/game/{gameId}/players", method = RequestMethod.POST)
+    public ResponseEntity<Map<String, Object>> joinGame (@PathVariable Long gameId, Authentication authentication){
+        if(!isGuest(authentication)){
+            //if(gameRepo.findAll().stream().anyMatch(b -> b.getId().equals(gameId))){
+            if(gameRepo.findById(gameId).orElse(null) != null ){
+                if(gameRepo.findById(gameId).orElse(null).getGamePlayers().size() < 2){
+                    if(  gameRepo.findById(gameId).orElse(null).getPlayers().stream().anyMatch(player -> player != getLoggedUser(authentication)) ) {
+                        Map<String, Object> info = new LinkedHashMap<>();
+                        Game gameToJoin = gameRepo.findAll().stream().filter(game -> game.getId().equals(gameId)).findFirst().orElse(null);
+                        GamePlayer newGamePlayer = new GamePlayer(gameToJoin, getLoggedUser(authentication));
+                        gamePlayerRepo.save(newGamePlayer);
+                        return new ResponseEntity<>(makeMap("gpid", newGamePlayer.getId()), HttpStatus.ACCEPTED);
+                    }
+                    else {
+                        return new ResponseEntity<>(makeMap("error", "You are your own opponent"), HttpStatus.FORBIDDEN);
+                    }
+                }
+                else{
+                    return new ResponseEntity<>(makeMap("error", "This game is already full"), HttpStatus.FORBIDDEN);
+                }
+            }
+            else{
+                return new ResponseEntity<>(makeMap("error", "The game you're searching for doesn't exist in the Games Repository"), HttpStatus.FORBIDDEN);
+            }
+        }
+        else{
+            return  new ResponseEntity<>(makeMap("error", "You need to Log In, please Enter your email and password"), HttpStatus.UNAUTHORIZED);
+        }
+        }
 
     @RequestMapping(path = "/games", method = RequestMethod.POST)
     public ResponseEntity<Map<String, Object>> createGame(Authentication authentication) {
@@ -77,6 +109,38 @@ public class SalvoController {
                 .map(game -> gameDTO(game)).collect(toList()));
         return info;
     }
+    @RequestMapping(path = "/games/players/{gamePlayerId}/ships", method = RequestMethod.POST)
+    public ResponseEntity<Map<String, Object>> addShips(@PathVariable Long gamePlayerId, Authentication authentication, @RequestBody Set<Ship> shipsList) {
+        if(!isGuest(authentication)){
+            if(gamePlayerRepo.findById(gamePlayerId).orElse(null) != null){
+                if(gamePlayerRepo.findById(gamePlayerId).orElse(null).getPlayer().equals( getLoggedUser(authentication))){
+                    if(gamePlayerRepo.findById(gamePlayerId).orElse(null).getShips().size() == 0){
+                        //add code to add ships to the gamePlayer and save them.
+                        //There's no need for new content in the response, because...
+                        //... the page needs to request an updated game view, to see possible actions by the opponent
+                        for (Ship ship: shipsList) {
+                            gamePlayerRepo.findById(gamePlayerId).orElse(null).addShip(ship);
+                            shipRepo.save(ship);
+                        }
+                        return new ResponseEntity<>(makeMap("shipJustCreated", "returns the list of ships just created"), HttpStatus.CREATED);
+                    }
+                    else{
+                        return new ResponseEntity<>(makeMap("error", "Ships already in place"), HttpStatus.FORBIDDEN);
+                    }
+                }
+                else{
+                    return new ResponseEntity<>(makeMap("error", "You can only manage your own ships"), HttpStatus.UNAUTHORIZED);
+                }
+            }
+            else {
+                return new ResponseEntity<>(makeMap("error", "No GamePlayer found for you"), HttpStatus.UNAUTHORIZED);
+            }
+        }
+        else{
+            return new ResponseEntity<>(makeMap("error", "You need to Log In, please Enter your email and password"), HttpStatus.UNAUTHORIZED);
+        }
+    }
+
     @RequestMapping("/game_view/{gamePlayerId}")
     public Object getGameInfo(@PathVariable Long gamePlayerId, Authentication authentication) {
         if (!isGuest(authentication)) {
@@ -124,6 +188,7 @@ public class SalvoController {
         Player newPlayer = playerRepo.save(player);
         return new ResponseEntity<>(makeMap("id", newPlayer.getUserName()), HttpStatus.CREATED);
     }
+
 
     public Map<String, Object> currentUsertDTO(Player player){
         Map<String, Object> info = new LinkedHashMap<>();

@@ -94,11 +94,11 @@
 
 							<td v-if="auth">
 
-								<a v-if="visibleJoinGameButton(game)" v-bind:href=joinGame() class="btn btn-outline-primary">Join Game</a>
+								<a v-bind:data-game_id="game.id" v-if="game.gameplayers.length == 1" v-on:click=joinGame(game.id) class="btn btn-outline-primary">Join Game</a>
 
-								<a v-else-if="visibleContinueGameButton(game)" v-bind:href=continueGame(game) class="btn btn-outline-primary">Continue Game</a>
+								<a data-game_id="game.id" v-else-if="game.scores[0].score == null || game.scores[1].score == null" v-on:click=continueGame(game) class="btn btn-outline-primary">Continue Game</a>
 
-								<a v-else v-bind:href=gameOver() class="btn btn-outline-primary">Game Over</a>
+								<a data-game_id="game.id" v-else v-on:click=gameOver() class="btn btn-outline-primary">Game Over</a>
 
 							</td>
 						</tr>

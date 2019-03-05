@@ -37,19 +37,21 @@ var myVue = new Vue({
 				method: 'GET'
 			})
 			.then(function (response) {
-				return response.json();
-				//console.log("First .then() works!");
+					if (!response.ok) {
+        	throw new Error("HTTP error, status = " + response.status);
+      		}
+					return response.json();
+					//alert("Game Data Status: " + response.status)
 			})
 			.then(function (gamesJson) {
-				//console.log(JSON.stringify(gamesJson));
 				//console.log(gamesJson);
 				//console.log("Second .then() works!");
 				myVue.gamesJson = gamesJson;
 					if(myVue.gamesJson.logged_player !== 'guest'){
 						myVue.auth = true
-					}
-					
+					}					
 			}).catch(function (error) {
+				console.log("The getGamesInfo fetching(GET) to api/games catches an error");
 				alert(error);
 				//console.log("Error during fetch" + error.message)
 			});
@@ -59,13 +61,13 @@ var myVue = new Vue({
 				method: 'GET'
 			})
 			.then(function (response) {
-				return response.json();
-				//console.log("First .then() works!");
+					if (!response.ok) {
+        	throw new Error("HTTP error, status = " + response.status);
+      		}
+					return response.json();
+					//alert("Leaderboard Data Status" + response.status);
 			})
 			.then(function (leaderboard) {
-				//console.log("Leaderboard Json: " + JSON.stringify(leaderboard));
-				//console.log(leaderboard);
-				//console.log("Second .then() works!");
 				myVue.sortedLeaderboard = leaderboard.sort(function(a,b){
 					/* ###########################
 					Review this code to properly sort the leaderboard table!!
@@ -89,7 +91,7 @@ var myVue = new Vue({
 			}
 			else{
 			fetch('/api/login', {
-                credentials: 'include',
+        credentials: 'include',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
         },
@@ -97,17 +99,12 @@ var myVue = new Vue({
         body: getBody(arg)
     })
     .then(function (data) {
-        console.log('Request success: ', data);
+				if (!data.ok) {
+        throw new Error("HTTP error, status = " + data.status);
+      	}
 				alert("Log In Status: " + data.status);
-				if(data.status > 100 && data.status < 300){
-				myVue.auth = true;
-				}
-//				else{
-//					myVue.existingUserInput = ["repeat", "repeat"];	
-//				}
-				//we want to refresh the page:
-				//myVue.getGamesInfo();
-				//myVue.getLeaderBoardInfo();			
+				myVue.auth = true;				
+				//we want to refresh the page:			
 				document.location.reload();
     })
     .catch(function (error) {
@@ -119,7 +116,7 @@ var myVue = new Vue({
 			
 			//first fetch is for creating the new user
 			fetch('/api/players', {
-                credentials: 'include',
+        credentials: 'include',
         headers: {
             'Content-Type': 'application/json'
         },
@@ -128,17 +125,18 @@ var myVue = new Vue({
 				//remember: the body in any request must be a string
     })
     .then(function (data) {
-        console.log('Request success: ', data);
-				alert("Log In Status: " + data.status);
+				if (!data.ok) {
+        throw new Error("HTTP error, status = " + data.status);
+      	}
+        console.log('Fetch succeeded and with server response: ', data);
+				alert("Sign Up Status: " + data.status);				
 				//second fetch is for authentication of the this new user
 				myVue.logInUser(myVue.newUserInput);
 				//window.location.reload();
     })
     .catch(function (error) {
-        console.log('Request failure: ', error);
-    });
-		
-			
+        console.log(error);
+    });			
 	},		
 		logOutUser: function(){
 			fetch('/api/logout', {
@@ -150,31 +148,44 @@ var myVue = new Vue({
         //body: getBody(this.existingUserInput)
     })
     .then(function (data) {
-        console.log('Request success: ', data);
-				alert("Log In Status: " + data.status);
+				if (!data.ok) {
+        throw new Error("HTTP error, status = " + data.status);
+      	}
+        console.log('Fetch succeeded and with server response: ', data);
+				alert("Log Out Status: " + data.status);				
 				myVue.auth = false;
 				document.location.reload();
     })
     .catch(function (error) {
+        console.log(error);
+    });
+		},		
+		joinGame: function(gameId){
+			console.log("El game id es: " + gameId);
+			fetch('/api/game/' + gameId + '/players', {
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        method: 'POST',
+        body: ""
+    		})
+				
+			.then(function(response){
+				alert("Join Game status: " + response.status);
+				if (!response.ok) {
+        throw new Error("HTTP error, status = " + response.status);
+      	}
+				return response.json();				
+			})
+    .then(function (data) {			
+				alert("New player joined. The new gamePlayer es: " + data.gpid);				
+				document.location.href="/web/game.html?gp=" + data.gpid;
+    })
+    .catch(function (error) {
         console.log('Request failure: ', error);
     });
-		},
-		visibleJoinGameButton: function(game){
-			if(game.gameplayers.length == 1){
-			return true
-				 }
-		},
-		visibleContinueGameButton: function(game){
-			if(game.scores[0].score == null || game.scores[1].score == null){
-			return true
-				 }
-		},			
-		joinGame: function(){
-			
-			
-			
-			return "http://google.com"
-		},
+		},		
 		continueGame: function(game){
 			var gpContinueGame = "";
 			for(var i = 0; i < game.gameplayers.length; i++){
@@ -183,31 +194,31 @@ var myVue = new Vue({
 					break;
 				}
 			}
-			return "/web/game.html?gpContinueGame=" + gpContinueGame
-		},
-		gameOver: function(){
-			return "/web/games.html"
+			document.location.href="/web/game.html?gpContinueGame=" + gpContinueGame;		
+		},		
+		gameOver: function(){			
+			document.location.href="/web/games.html";
 		},
 		createGame: function(){
 			fetch('/api/games', {
-                credentials: 'include',
-       
+        credentials: 'include',       
 				headers: {
             'Content-Type': 'application/json'
-        },
-				
+        },				
         method: 'POST',
         body: ""
     })
-    .then(function (data) {
-       return data.json();
+    .then(function (response) {
+				if (!response.ok) {
+        throw new Error("HTTP error, status = " + response.status);
+      	}
+       return response.json();
     })
 			.then(function(data){
-				console.log('Request success: '+  data.gpid);
-				//alert("New Game created " + data.status);
 				var gpJustCreated = data.gpid;
 				console.log("El retorno del Post me trae un data.gp = " + gpJustCreated);
-				myVue.getGamesInfo();
+				alert("New Game created with new gamePlayer: " + gpJustCreated);
+				//myVue.getGamesInfo();
 				window.location.href = "/web/game.html?gp=" + gpJustCreated;
 			})
     .catch(function (error) {

@@ -2,13 +2,13 @@ h4{
 	background-color: black;
 	color: white;
 }
+
+/*
 .playingBoard{
 	border: 1px solid blue;
-	/*
-	width: 450px;
-	height: 450px;
-	*/
 }
+*/
+
 td{
 	width: 45px;
 	height: 45px;

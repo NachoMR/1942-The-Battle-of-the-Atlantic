@@ -11,23 +11,29 @@ console.log("window.location es: " + window.location);
 
 
 
+
 //================ VUE VAR DECLARATION ===================
 
 var myVue = new Vue({
 	el: "#app",
 	data: {
 		game_view: [],
+		placeShips: true
 	},
 	methods: {
 		goToHome: function(){
 			document.location.href="/web/games.html"
 		},
-		getGameView: function () {
+		getGameView: function () {			
 		fetch('http://localhost:8080/api/game_view/' + gp, {
 				method: 'GET'
 			})
 			.then(function (response) {
+				if (!response.ok) {
+        throw new Error("HTTP error, status = " + response.status);
+      	}
 				return response.json();
+				alert("Your Game Info Status: " + response.status);
 			})
 			.then(function (game_view) {
 				if(game_view.error){
@@ -44,9 +50,37 @@ var myVue = new Vue({
 			.catch(function (error) {
 				alert(error);
 			});
-		
-	}
-		
+			
+	},
+		// testAddShips() is a function to test adding Ships in the back end
+		testAddShips: function(){
+			fetch('/api/games/players/' + gp + '/ships', {
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        method: 'POST',
+        body: JSON.stringify([/*{type: "carrier", locations: ["D3","E3","F3","G3","H3"]},
+															{type: "patrol_boat", locations: ["B6", "B7"]},*/
+															{type: "destroyer", locations: ["A5","A6","A7"]},
+															{type: "submarine", locations: ["I7","I8","I9"]},		
+															{type: "battleship", locations: ["D2","E2","F2","G2"]}
+														
+															
+														 ])
+    		})				
+			.then(function(response){				
+				alert("Add Ships status" + response.status);
+				return response.json();
+			})
+    	.then(function (data) {			
+					document.location.href='/web/game.html?gp=' + gp;
+			})
+    	.catch(function (error) {
+        console.log('Request failure: ', error);
+			});
+			
+		}		
 	},
 	created: function(){	
 		this.getGameView();
@@ -62,7 +96,8 @@ function renderTable(cellIdPrefix, tableId){
 
 function showShips(ships) {
 	ships.forEach(a => a.locations.forEach(b => {
-	document.getElementById("ship" + b).setAttribute("class", a.type)
+	document.getElementById("ship" + b).setAttribute("class", a.type);
+	document.getElementById("ship" + b).innerHTML = a.type.charAt(0).toUpperCase();
 	})
 	);
 }
