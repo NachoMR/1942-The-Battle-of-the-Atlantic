@@ -122,7 +122,7 @@ public class SalvoController {
                             gamePlayerRepo.findById(gamePlayerId).orElse(null).addShip(ship);
                             shipRepo.save(ship);
                         }
-                        return new ResponseEntity<>(makeMap("shipJustCreated", "returns the list of ships just created"), HttpStatus.CREATED);
+                        return new ResponseEntity<>(makeMap("Set of Ships", gamePlayerRepo.findById(gamePlayerId).orElse(null).getShips()), HttpStatus.CREATED);
                     }
                     else{
                         return new ResponseEntity<>(makeMap("error", "Ships already in place"), HttpStatus.FORBIDDEN);
@@ -133,6 +133,34 @@ public class SalvoController {
                 }
             }
             else {
+                return new ResponseEntity<>(makeMap("error", "No GamePlayer found for you"), HttpStatus.UNAUTHORIZED);
+            }
+        }
+        else{
+            return new ResponseEntity<>(makeMap("error", "You need to Log In, please Enter your email and password"), HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    @RequestMapping(path = "/games/players/{gamePlayerId}/salvos", method = RequestMethod.POST)
+    public ResponseEntity<Map<String, Object>> addSalvo(@PathVariable Long gamePlayerId, Authentication authentication, @RequestBody Salvo thisSalvo){
+        if(!isGuest(authentication)){
+            if(gamePlayerRepo.findById(gamePlayerId).orElse(null) != null){
+                if(gamePlayerRepo.findById(gamePlayerId).orElse(null).getPlayer().equals(getLoggedUser(authentication))){
+                    //if(already submitted salvo for the current turn...){
+                    if(  gamePlayerRepo.findById(gamePlayerId).orElse(null).getSalvoes().size() < thisSalvo.getTurn()   ){
+                        //add code to add a Salvo to the GamePlayer with its correspondant turn (long) and then save it to the Repository
+                        gamePlayerRepo.findById(gamePlayerId).orElse(null).addSalvo(thisSalvo);
+                        return new ResponseEntity<>(makeMap("Salvo List of Locations", "Five Locations corresponding to the Salvo in this turn"), HttpStatus.CREATED);
+                    }
+                    else{
+                        return new ResponseEntity<>(makeMap("error", "You can only place salvos one set at a time"), HttpStatus.FORBIDDEN);
+                    }
+                }
+                else{
+                    return new ResponseEntity<>(makeMap("error", "You can only manage your own salvo"), HttpStatus.UNAUTHORIZED);
+                }
+            }
+            else{
                 return new ResponseEntity<>(makeMap("error", "No GamePlayer found for you"), HttpStatus.UNAUTHORIZED);
             }
         }

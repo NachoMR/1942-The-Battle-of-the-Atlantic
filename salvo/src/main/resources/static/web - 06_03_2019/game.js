@@ -9,6 +9,17 @@ var gp = window.location.search.split("=")[1]
 console.log("Vamos a hacer Fetch sobre: http://localhost:8080/api/game_view/" + gp);
 console.log("window.location es: " + window.location);
 
+
+
+var placedShips = [{type: "carrier", locations: []},
+									 {type: "patrol_boat", locations: []},
+									 {type: "destroyer", locations: []},
+									 {type: "submarine", locations: []},		
+									 {type: "battleship", locations: []}
+										];
+
+
+
 //================ VUE VAR DECLARATION ===================
 
 var myVue = new Vue({
@@ -17,25 +28,11 @@ var myVue = new Vue({
 		droppedId: "",
 		droppedSize: "",
 		game_view: [],
-		placingShips: false,
+		placeShips: true,
 		horizontal: true,
-		allships: ["carrier", "battleship", "submarine", "destroyer", "patrol_boat"],
-		placedShips: [{type: "carrier", locations: []},
-									{type: "patrol_boat", locations: []},
-									{type: "destroyer", locations: []},
-									{type: "submarine", locations: []},		
-									{type: "battleship", locations: []}
-									]
-		},
+		allships: ["carrier", "battleship", "submarine", "destroyer", "patrol_boat"]
+	},
 	methods: {
-		doWeHaveShips: function(){
-			if(this.game_view.ships.length == 0){
-				this.placingShips = true;
-			}
-			else{
-				this.placingShips = false;
-			}			
-		},
 		goToHome: function(){
 			document.location.href="/web/games.html"
 		},
@@ -63,54 +60,68 @@ var myVue = new Vue({
 				myVue.game_view = game_view;
 				showShipsOnGrid(myVue.game_view.ships);
 				showSalvoesOnGrid(myVue.game_view.salvoes);
-				myVue.doWeHaveShips();
 				}
 			})
 			.catch(function (error) {
 				alert(error);
 			});
 			
-	},		
-		postShips: function(){
-			//creating the objecto to be sent as the Body of the Fetch
-			this.placedShips[0].locations = searchGridForClass("shipLocations", "carrier");
-			this.placedShips[1].locations = searchGridForClass("shipLocations", "battleship");
-			this.placedShips[2].locations = searchGridForClass("shipLocations", "submarine");
-			this.placedShips[3].locations = searchGridForClass("shipLocations", "destroyer");
-			this.placedShips[4].locations = searchGridForClass("shipLocations", "patrol_boat");
-			//console.log(this.placedShips);
-			if(this.placedShips[0].locations.length == 0 || this.placedShips[1].locations.length == 0 || this.placedShips[2].locations.length == 0 || this.placedShips[3].locations.length == 0 || this.placedShips[4].locations.length == 0){
-				alert("You must place All five Warships on your Grid before start firing!")
-			}
-			else{				
-				alert("Listo para enviar al Back-End...");
-					
-				fetch('/api/games/players/' + gp + '/ships', {
-						credentials: 'include',
-						headers: {
-								'Content-Type': 'application/json'
-						},
-						method: 'POST',
-						body: JSON.stringify(this.placedShips)
-					})
-				.then(function(response){				
-					alert("Adding Ships status" + response.status);
-					//return response.json();					
-				})
-				.then(function (data) {
+	},
+			// testAddShips() is a function to test adding Ships in the back end.
+			// and has to be deleted when drag and drop is working
+		testAddShips: function(){
+			fetch('/api/games/players/' + gp + '/ships', {
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        method: 'POST',
+        body: JSON.stringify([/*{type: "carrier", locations: ["D3","E3","F3","G3","H3"]},
+															{type: "patrol_boat", locations: ["B6", "B7"]},*/
+															{type: "destroyer", locations: ["A5","A6","A7"]},
+															{type: "submarine", locations: ["I7","I8","I9"]},		
+															{type: "battleship", locations: ["D2","E2","F2","G2"]}
+														 ])
+    		})				
+			.then(function(response){				
+				alert("Add Ships status" + response.status);
+				return response.json();
+			})
+    	.then(function (data) {			
 					document.location.href='/web/game.html?gp=' + gp;
-				})
-				.catch(function (error) {
-					console.log('Request failure: ', error);
-				});
-			}
+			})
+    	.catch(function (error) {
+        console.log('Request failure: ', error);
+			});
+			
+		},
+		postShips: function(){
+			fetch('/api/games/players/' + gp + '/ships', {
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        method: 'POST',
+        body: JSON.stringify()
+    		})				
+			.then(function(response){				
+				alert("Add Ships status" + response.status);
+				return response.json();
+			})
+    	.then(function (data) {			
+					document.location.href='/web/game.html?gp=' + gp;
+			})
+    	.catch(function (error) {
+        console.log('Request failure: ', error);
+			});
+			
 		},
 		rotateShips: function(){
 			if(this.horizontal){
 				document.getElementById("shipsToBePlaced").classList.toggle("row");
 				for( var i = 0; i < this.allships.length; i++){
 					var ship = document.getElementById(this.allships[i]);
-					//console.log(ship);
+					console.log(ship);
 					ship.setAttribute("class", this.allships[i] + "DraggableVertical mt-2 mr-2");
 				}
 				this.horizontal = false;
@@ -120,9 +131,9 @@ var myVue = new Vue({
 				for( var i = 0; i < this.allships.length; i++){
 					var ship = document.getElementById(this.allships[i]);
 					ship.setAttribute("class", this.allships[i] + "Draggable my-2");
-				}
-					this.horizontal = true;
 			}
+				this.horizontal = true;
+		}
 		},
 			//drag&drop methods
 		dragStart: function(ev) {
@@ -132,36 +143,42 @@ var myVue = new Vue({
   		ev.dataTransfer.setData("size", ev.target.dataset.length);
 			//console.log("la longitud es: " + ev.target.dataset.length);
 		},
-		dragOver: function(ev) {
+		allowDrop: function(ev) {
   		ev.preventDefault();			
 		},
 		drop: function(ev) {
 			console.log("The drop 'ev' is: ");
 			console.log(ev);
 			//console.log(ev.target.id.slice(4,7));
+			//console.log(typeof ev.target.id.slice(5,7));
+			//alert("mira el ev en la consola");
   		ev.preventDefault();
   		this.droppedId = ev.dataTransfer.getData("text");
-			//console.log("The droppedId is: " + myVue.droppedId);
+			console.log("The droppedId is: " + myVue.droppedId);
   		this.droppedSize = ev.dataTransfer.getData("size");
-			//console.log("The droppedSize is: " + myVue.droppedSize);
-			document.getElementById(this.droppedId).style.visibility = "hidden";			
+			console.log("The droppedSize is: " + myVue.droppedSize);
+  		//ev.target.appendChild(document.getElementById(this.droppedId));
+			document.getElementById(this.droppedId).style.visibility="hidden";			
 			
-			for(var i = 0 ; i < this.droppedSize ; i++){								
+			for(var i = 0 ; i < this.droppedSize ; i++){
+				//ev.target.id.slice(4,7)
+				//var letterId = ev.target.id.slice(4, 5);				
 				if(this.horizontal){
 					var letterId = ev.target.id.slice(4, 5);
 					var numberId = parseInt(ev.target.id.slice(5,7)) + i;					
 				}
 				else{
+					// pintar celdas en vertical...
+					// ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]
 					var letterIndex = rowLetters.indexOf(ev.target.id.slice(4, 5))
 					var letterId = rowLetters[letterIndex +i];
 					var numberId = parseInt(ev.target.id.slice(5,7));					
 				}
 				var cellId = document.getElementById("ship" + letterId + numberId);
-					//console.log("letter: " + letterId + " + number: " + numberId);
-					//console.log(cellId);
-					cellId.setAttribute("class", this.droppedId);
-					cellId.removeAttribute("v-on:dragover");
-					cellId.removeAttribute("v-on:drop");
+					console.log("letter: " + letterId + " + number: " + numberId);
+					console.log(cellId);
+					cellId.setAttribute("class", myVue.droppedId + "_onGrid");
+					cellId.setAttribute("data-shiptype", this.droppedId);
 			}
 		}
 	},
@@ -174,12 +191,12 @@ var myVue = new Vue({
 // ====================== FUNCTIONS ======================
 
 function renderTable(cellIdPrefix, tableId){
-	document.getElementById(tableId).innerHTML = "<tr><td></td>" + colNumbers.map(col => "<td>" + col + "</td>").join("") + "</tr>" + rowLetters.map(row => "<tr><td>" + row + "</td>" + colNumbers.map(col => "<td id='" + cellIdPrefix + row + col + "' v-on:dragover='dragOver(this.event)' v-on:drop='drop(this.event)'>" + "</td>").join("") + "</tr>").join("");
+	document.getElementById(tableId).innerHTML = "<tr><td></td>" + colNumbers.map(col => "<td>" + col + "</td>").join("") + "</tr>" + rowLetters.map(row => "<tr><td>" + row + "</td>" + colNumbers.map(col => "<td id='" + cellIdPrefix + row + col + "' v-on:dragover='allowDrop(this.event)' v-on:click='alertSomething(\"dragleave\")' v-on:drop='drop(this.event)'>" + "</td>").join("") + "</tr>").join("");
 }
 
 function showShipsOnGrid(ships) {
 	ships.forEach(a => a.locations.forEach(b => {
-	document.getElementById("ship" + b).setAttribute("class", a.type);
+	document.getElementById("ship" + b).setAttribute("class", a.type + "_onGrid");
 	document.getElementById("ship" + b).innerHTML = a.type.charAt(0).toUpperCase();
 	})
 	);
@@ -198,24 +215,6 @@ function showSalvoesOnGrid(salvoes){
 			salvo.locations.forEach(location => document.getElementById("ship" + location).classList.add("salvoes"));
 		}
 	});
-}
-
-function searchGridForClass(targetTable, targetClass){
-	var table = document.getElementById(targetTable);
-	var tr = table.getElementsByTagName("tr");
-	var shipArray = [];
-	for(var i = 0; i < tr.length; i++){
-		var td = tr[i].getElementsByTagName("td")
-		for(var j = 0; j < td.length; j++){
-			if(td[j].classList.contains(targetClass)){				
-				var letter = rowLetters[i-1];
-				var number = j;
-				//console.log("Letra+Numero: " + letter + number);								
-				shipArray.push(letter + number);
-			}
-		}
-	}
-	return shipArray;
 }
 
 

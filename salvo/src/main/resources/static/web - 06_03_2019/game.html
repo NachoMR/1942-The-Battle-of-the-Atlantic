@@ -14,7 +14,6 @@
 		<button type="button" name="goToHome" v-on:click="goToHome()">
 			&#127968Home
 		</button>
-		<button v-if="!placingShips">Fire!</button>
 
 		<div>
 
@@ -31,11 +30,11 @@
 					<table id="shipLocations" class="mx-auto">
 					</table>
 				</div>
-				<div v-if="placingShips" class="col-sm text-center">
+
+				<div v-show="placeShips" class="col-sm text-center">
 					<h4>Place your Ships</h4>
 					<button v-on:click="rotateShips()">Rotate Ships</button>
 					<button v-on:click="reposition()">Reposition</button>
-					<button v-on:click="postShips()">Start Firing</button>
 					<div id="shipsToBePlaced">
 						<div id="carrier" data-length="5" class="carrierDraggable my-2" draggable="true" v-on:dragstart="dragStart(this.event)">Carrier</div>
 						<div id="battleship" data-length=4 class="battleshipDraggable my-2" draggable="true" v-on:dragstart="dragStart(this.event)">Battleship</div>
@@ -43,8 +42,20 @@
 						<div id="destroyer" data-length=3 class="destroyerDraggable my-2" draggable="true" v-on:dragstart="dragStart(this.event)">Destroyer</div>
 						<div id="patrol_boat" data-length=2 class="patrol_boatDraggable my-2" draggable="true" v-on:dragstart="dragStart(this.event)">Patrol Boat</div>
 					</div>
+<!--
+					<div v-if="!horizontal">
+						<div class="row">
+						<div data-id="carrier" data-length="5" class="carrierDraggableVertical mt-2 mr-2" draggable="true" v-on:dragstart="dragStart(this.event)">Carrier</div>
+						<div data-id="battleship" data-length=4 class="battleshipDraggableVertical mt-2 mr-2" draggable="true" v-on:dragstart="dragStart(this.event)">Battleship</div>
+						<div data-id="submarine" data-length=3 class="submarineDraggableVertical mt-2 mr-2" draggable="true" v-on:dragstart="dragStart(this.event)">Submarine</div>
+						<div data-id="destroyer" data-length=3 class="destroyerDraggableVertical mt-2 mr-2" draggable="true" v-on:dragstart="dragStart(this.event)">Destroyer</div>
+						<div data-id="patrol_boat" data-length=2 class="patrol_boatDraggableVertical mt-2 mr-2" draggable="true" v-on:dragstart="dragStart(this.event)">Patrol Boat</div>
+						</div>
+					</div>
+-->
 				</div>
-				<div v-if="!placingShips" class="col-sm text-center">
+
+				<div v-show="!placeShips" class="col-sm text-center">
 					<h4>These are your Salvoes</h4>
 					<table id="salvoesLocations" class="mx-auto">
 					</table>

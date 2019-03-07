@@ -30,19 +30,19 @@ td{
 	border: 1px solid red;
 }
 
-.carrier{
+.carrier_onGrid{
 	background-color: var(--carrier-color);
 }
-.battleship{
+.battleship_onGrid{
 	background-color: var(--battleship-color);
 }
-.submarine{
+.submarine_onGrid{
 	background-color: var(--submarine-color);
 }
-.destroyer{
+.destroyer_onGrid{
 	background-color: var(--destroyer-color);
 }
-.patrol_boat{
+.patrol_boat_onGrid{
 	background-color: var(--patrol_boat-color);
 }
 .salvoes{
@@ -110,11 +110,6 @@ td{
 	width: var(--cell-width);
 	height: calc(var(--cell-height)*2);
 	background-color: var(--patrol_boat-color);
-}
-
-.border{
-/*	border: 3px solid yellow;*/
-	background-color: black;
 }
 
 
