@@ -28,6 +28,8 @@ public class SalvoController {
     @Autowired
     private ShipRepository shipRepo;
     @Autowired
+    private SalvoRepository salvoRepo;
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
 
@@ -111,10 +113,11 @@ public class SalvoController {
     }
     @RequestMapping(path = "/games/players/{gamePlayerId}/ships", method = RequestMethod.POST)
     public ResponseEntity<Map<String, Object>> addShips(@PathVariable Long gamePlayerId, Authentication authentication, @RequestBody Set<Ship> shipsList) {
+        GamePlayer currentGamePlayer = gamePlayerRepo.findById(gamePlayerId).orElse(null);
         if(!isGuest(authentication)){
-            if(gamePlayerRepo.findById(gamePlayerId).orElse(null) != null){
-                if(gamePlayerRepo.findById(gamePlayerId).orElse(null).getPlayer().equals( getLoggedUser(authentication))){
-                    if(gamePlayerRepo.findById(gamePlayerId).orElse(null).getShips().size() == 0){
+            if(currentGamePlayer != null){
+                if(currentGamePlayer.getPlayer().equals( getLoggedUser(authentication))){
+                    if(currentGamePlayer.getShips().size() == 0){
                         //add code to add ships to the gamePlayer and save them.
                         //There's no need for new content in the response, because...
                         //... the page needs to request an updated game view, to see possible actions by the opponent
@@ -141,23 +144,30 @@ public class SalvoController {
         }
     }
 
-    @RequestMapping(path = "/games/players/{gamePlayerId}/salvos", method = RequestMethod.POST)
+    @RequestMapping(path = "/games/players/{gamePlayerId}/salvoes", method = RequestMethod.POST)
     public ResponseEntity<Map<String, Object>> addSalvo(@PathVariable Long gamePlayerId, Authentication authentication, @RequestBody Salvo thisSalvo){
+        GamePlayer currentGamePlayer = gamePlayerRepo.findById(gamePlayerId).orElse(null);
         if(!isGuest(authentication)){
-            if(gamePlayerRepo.findById(gamePlayerId).orElse(null) != null){
-                if(gamePlayerRepo.findById(gamePlayerId).orElse(null).getPlayer().equals(getLoggedUser(authentication))){
-                    //if(already submitted salvo for the current turn...){
-                    if(  gamePlayerRepo.findById(gamePlayerId).orElse(null).getSalvoes().size() < thisSalvo.getTurn()   ){
+            if(currentGamePlayer != null){
+                if(currentGamePlayer.getPlayer().equals(getLoggedUser(authentication))){
+
+
+                    //if(  currentGamePlayer.getSalvoes().size() < thisSalvo.getTurn()   ){
                         //add code to add a Salvo to the GamePlayer with its correspondant turn (long) and then save it to the Repository
-                        gamePlayerRepo.findById(gamePlayerId).orElse(null).addSalvo(thisSalvo);
-                        return new ResponseEntity<>(makeMap("Salvo List of Locations", "Five Locations corresponding to the Salvo in this turn"), HttpStatus.CREATED);
-                    }
-                    else{
-                        return new ResponseEntity<>(makeMap("error", "You can only place salvos one set at a time"), HttpStatus.FORBIDDEN);
-                    }
+                        thisSalvo.setTurn(currentGamePlayer.getSalvoes().size() + 1);
+                        currentGamePlayer.addSalvo(thisSalvo);
+                        salvoRepo.save(thisSalvo);
+                        return new ResponseEntity<>(makeMap("Salvo Created", "Five Locations corresponding to the Salvo in this turn have been created"), HttpStatus.CREATED);
+                    //}
+
+                    //else{
+                    //    return new ResponseEntity<>(makeMap("error", "Condition for 'turn' may be wrong and need to be checked. You can only place salvoes one set at a time"), HttpStatus.FORBIDDEN);
+                    //}
+
+
                 }
                 else{
-                    return new ResponseEntity<>(makeMap("error", "You can only manage your own salvo"), HttpStatus.UNAUTHORIZED);
+                    return new ResponseEntity<>(makeMap("error", "You can only manage your own salvoes"), HttpStatus.UNAUTHORIZED);
                 }
             }
             else{
@@ -216,7 +226,6 @@ public class SalvoController {
         Player newPlayer = playerRepo.save(player);
         return new ResponseEntity<>(makeMap("id", newPlayer.getUserName()), HttpStatus.CREATED);
     }
-
 
     public Map<String, Object> currentUsertDTO(Player player){
         Map<String, Object> info = new LinkedHashMap<>();

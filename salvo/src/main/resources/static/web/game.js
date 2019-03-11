@@ -1,8 +1,8 @@
 //Creation of the two grids (ship's location and Salvoes) by means of function renderTable()
 var colNumbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
 var rowLetters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
-renderTable("ship", "shipLocations");
-renderTable("salvo", "salvoesLocations");
+renderShipsTable();
+renderSalvoesTable();
 
 //getting the active/current gameplayer id from the "query string" at the end of the URL http://localhost:8080/web/game.html?gp=3
 var gp = window.location.search.split("=")[1]
@@ -16,7 +16,7 @@ var myVue = new Vue({
 	data: {
 		droppedId: "",
 		droppedSize: "",
-		game_view: [],
+		game_view: {},
 		placingShips: false,
 		horizontal: true,
 		allships: ["carrier", "battleship", "submarine", "destroyer", "patrol_boat"],
@@ -25,10 +25,12 @@ var myVue = new Vue({
 									{type: "destroyer", locations: []},
 									{type: "submarine", locations: []},		
 									{type: "battleship", locations: []}
-									]
+									],
+		currentSalvo: {turn: "", locations: []},
+		pastSalvoLocations: []
 		},
 	methods: {
-		doWeHaveShips: function(){
+		checkForShips: function(){
 			if(this.game_view.ships.length == 0){
 				this.placingShips = true;
 			}
@@ -59,17 +61,18 @@ var myVue = new Vue({
 					window.location.href = "games.html";
 				}
 			else{
-				console.log(game_view);
+				//console.log(game_view);
 				myVue.game_view = game_view;
 				showShipsOnGrid(myVue.game_view.ships);
 				showSalvoesOnGrid(myVue.game_view.salvoes);
-				myVue.doWeHaveShips();
+				myVue.checkForShips();
+				myVue.getPastSalvoLocations();
+				
 				}
 			})
 			.catch(function (error) {
 				alert(error);
-			});
-			
+			});			
 	},		
 		postShips: function(){
 			//creating the objecto to be sent as the Body of the Fetch
@@ -105,6 +108,31 @@ var myVue = new Vue({
 				});
 			}
 		},
+		postSalvo: function(){
+			
+			//add code to POST myVue.currentSalvo to the Back-End
+			fetch('/api/games/players/' + gp + '/salvoes', {
+						credentials: 'include',
+						headers: {
+								'Content-Type': 'application/json'
+						},
+						method: 'POST',
+						body: JSON.stringify(this.currentSalvo)
+					})
+				.then(function(response){				
+					alert("Adding Salvo status" + response.status);
+					//return response.json();					
+				})
+				.then(function (data) {
+					//alert("Vamos a recargar la pagina");
+					document.location.href='/web/game.html?gp=' + gp;
+				})
+				.catch(function (error) {
+					console.log('Request failure: ', error);
+				});
+			
+			
+		},
 		rotateShips: function(){
 			if(this.horizontal){
 				document.getElementById("shipsToBePlaced").classList.toggle("row");
@@ -122,6 +150,40 @@ var myVue = new Vue({
 					ship.setAttribute("class", this.allships[i] + "Draggable my-2");
 				}
 					this.horizontal = true;
+			}
+		},		
+		getPastSalvoLocations: function(){
+			this.game_view.salvoes
+				.filter(salvo => salvo.gamePlayer == gp)
+				.forEach(salvo => salvo.locations.forEach(loc => this.pastSalvoLocations.push(loc))
+			);	
+		},
+		setSalvoLocation: function(ev){
+			console.log(ev.target.id);
+			var td = ev.target;
+			var tdId = 	ev.target.id;
+			var currentSalvoLocations = this.currentSalvo.locations;
+			if(!this.pastSalvoLocations.includes(tdId.slice(5,8))){
+				if(!td.classList.contains("salvoes")){
+					if(currentSalvoLocations.length < 5){
+						currentSalvoLocations.push(tdId.slice(5, 8));
+						td.classList.add("salvoes");
+						console.log(this.currentSalvo.locations);
+					}
+					else{
+						alert("You can only fire 5 times in this turn")
+					}
+				}
+				else{
+					var index = currentSalvoLocations.indexOf(tdId.slice(5, 8));
+					console.log("index is: ", index);
+					currentSalvoLocations.splice(index, 1);
+					td.classList.remove("salvoes");
+					console.log(this.currentSalvo.locations);
+				}
+			}
+			else{
+				alert("You cannot select past salvoes locations");
 			}
 		},
 			//drag&drop methods
@@ -165,7 +227,7 @@ var myVue = new Vue({
 			}
 		}
 	},
-	created: function(){	
+	created: function(){
 		this.getGameView();
 	},
 	computed: {}
@@ -173,20 +235,24 @@ var myVue = new Vue({
 
 // ====================== FUNCTIONS ======================
 
-function renderTable(cellIdPrefix, tableId){
-	document.getElementById(tableId).innerHTML = "<tr><td></td>" + colNumbers.map(col => "<td>" + col + "</td>").join("") + "</tr>" + rowLetters.map(row => "<tr><td>" + row + "</td>" + colNumbers.map(col => "<td id='" + cellIdPrefix + row + col + "' v-on:dragover='dragOver(this.event)' v-on:drop='drop(this.event)'>" + "</td>").join("") + "</tr>").join("");
+function renderShipsTable(){
+	document.getElementById("shipLocations").innerHTML = "<tr><td></td>" + colNumbers.map(col => "<td>" + col + "</td>").join("") + "</tr>" + rowLetters.map(row => "<tr><td>" + row + "</td>" + colNumbers.map(col => "<td id='ship" + row + col + "' v-on:dragover='dragOver(this.event)' v-on:drop='drop(this.event)'>" + "</td>").join("") + "</tr>").join("");
+}
+
+function renderSalvoesTable(){
+	document.getElementById("salvoesLocations").innerHTML = "<tr><td></td>" + colNumbers.map(col => "<td>" + col + "</td>").join("") + "</tr>" + rowLetters.map(row => "<tr><td>" + row + "</td>" + colNumbers.map(col => "<td id='salvo" + row + col + "'v-on:click='setSalvoLocation(this.event)'>" + "</td>").join("") + "</tr>").join("");
 }
 
 function showShipsOnGrid(ships) {
-	ships.forEach(a => a.locations.forEach(b => {
-	document.getElementById("ship" + b).setAttribute("class", a.type);
-	document.getElementById("ship" + b).innerHTML = a.type.charAt(0).toUpperCase();
+	ships.forEach(ship => ship.locations.forEach(loc => {
+	document.getElementById("ship" + loc).setAttribute("class", ship.type);
+	document.getElementById("ship" + loc).innerHTML = ship.type.charAt(0).toUpperCase();
 	})
 	);
 }
 
 function showSalvoesOnGrid(salvoes){
-	//this functions will show/render salvoes for currentGp and his/her opponentGp
+	//this functions will show/render salvoes for both currentGp and his/her opponentGp
 	salvoes.forEach(salvo => {
 		if(salvo.gamePlayer == gp){
 			//console.log("imprimiendo salvoes del currentGp");

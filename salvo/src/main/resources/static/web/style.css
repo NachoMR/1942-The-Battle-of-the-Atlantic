@@ -1,7 +1,7 @@
 /* ##### My VARIABLES ##### */
 :root{
-  --cell-width: 45px;
-  --cell-height: 45px;
+  --cell-width: 30px;
+  --cell-height: 30px;
 	--carrier-color: #6a89cc;
 	--battleship-color: #a29bfe;
 	--submarine-color: #82ccdd;
@@ -30,6 +30,8 @@ td{
 	border: 1px solid red;
 }
 
+/* ########## SHIPS ########## */
+
 .carrier{
 	background-color: var(--carrier-color);
 }
@@ -45,12 +47,6 @@ td{
 .patrol_boat{
 	background-color: var(--patrol_boat-color);
 }
-.salvoes{
-	background-image: url(explosion.gif);
-	background-size: contain;
-	background-repeat: no-repeat;
-}
-
 
 .carrierDraggable{
 	width: calc(var(--cell-width)*5);
@@ -112,10 +108,20 @@ td{
 	background-color: var(--patrol_boat-color);
 }
 
-.border{
-/*	border: 3px solid yellow;*/
-	background-color: black;
+/* ########## SALVOES ########## */
+
+.hit{
+	background-image: url(hit.gif);
+	background-size: contain;
+	background-repeat: no-repeat;
 }
+
+.salvoes{
+	background-image: url(bomb.png);
+	background-size: contain;
+	background-repeat: no-repeat;
+}
+
 
 
 

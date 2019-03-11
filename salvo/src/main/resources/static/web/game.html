@@ -14,12 +14,12 @@
 		<button type="button" name="goToHome" v-on:click="goToHome()">
 			&#127968Home
 		</button>
-		<button v-if="!placingShips">Fire!</button>
+		<button v-if="!placingShips" v-on:click="postSalvo()">Fire!</button>
 
 		<div>
 
-			<div class="text-center" v-if="game_view.length != 0">
-				<h1>This is {{game_view.gamePlayers[0].player.email.split("@")[0]}} current Game (g={{game_view.id}})</h1>
+			<div class="text-center" v-if="game_view.hasOwnProperty('ships')">
+				<h3>This is {{game_view.gamePlayers[0].player.email.split("@")[0]}} current Game (g={{game_view.id}})</h3>
 				<h4 v-if="game_view.gamePlayers.length > 1">{{game_view.gamePlayers[0].player.email.split("@")[0]}} (gp={{game_view.gamePlayers[0].id}}) - vs - {{game_view.gamePlayers[1].player.email.split("@")[0]}} (gp={{game_view.gamePlayers[1].id}})</h4>
 				<h4 v-else>{{game_view.gamePlayers[0].player.email.split("@")[0]}} waiting for opponent...</h4>
 			</div>
