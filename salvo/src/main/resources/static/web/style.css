@@ -18,17 +18,41 @@ h4{
 	color: white;
 }
 
-/*
-.playingBoard{
-	border: 1px solid blue;
-}
-*/
-
 td{
 	width: var(--cell-width);
-	height: var(--cell-height);	
+	height: var(--cell-height);
 	border: 1px solid red;
 }
+
+/* ########## SHIP STATUS ########## */
+
+.strikethrough{
+	text-decoration: line-through;
+}
+
+.status>div{
+	/*display: inline-block;*/
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	justify-content: flex-start;
+	align-content: center;
+}
+
+/*
+.status>div>div{
+	width: var(--cell-width);
+	height: var(--cell-height);
+	background-image: url(hit.gif);
+	background-repeat: no-repeat;
+	background-size: calc(var(--cell-width)/1.1) calc(var(--cell-height)/1.1);
+	background-position: center;
+	font-weight: bold;
+	color: black;
+	border-radius: calc(var(--cell-width)/2);
+	vertical-align: text-bottom;
+}
+*/
 
 /* ########## SHIPS ########## */
 
@@ -108,18 +132,37 @@ td{
 	background-color: var(--patrol_boat-color);
 }
 
-/* ########## SALVOES ########## */
+/* ########## SALVOES / HITS / MISSED ########## */
 
 .hit{
+	width: var(--cell-width);
+	height: var(--cell-height);	
 	background-image: url(hit.gif);
-	background-size: contain;
 	background-repeat: no-repeat;
+	background-size: calc(var(--cell-width)/1.1) calc(var(--cell-height)/1.1);
+	background-position: center;
+	font-weight: bold;	
+	color: black;
+	vertical-align: text-bottom;
 }
 
 .salvoes{
-	background-image: url(bomb.png);
-	background-size: contain;
+	background-image: url(salvo.gif);
 	background-repeat: no-repeat;
+	background-size: contain;
+	background-position: center;
+	/*background-size: calc(var(--cell-width)/1) calc(var(--cell-height)/1);*/
+}
+
+.missed{
+	background-image: url(missed.gif);
+	background-repeat: no-repeat;
+	background-size: contain;
+	font-weight: bold;
+}
+
+.hidden{
+	visibility: hidden;
 }
 
 

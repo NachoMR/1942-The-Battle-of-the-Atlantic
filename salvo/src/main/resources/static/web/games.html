@@ -98,7 +98,7 @@
 
 								<a data-game_id="game.id" v-else-if="game.scores[0].score == null || game.scores[1].score == null" v-on:click=continueGame(game) class="btn btn-outline-primary">Continue Game</a>
 
-								<a data-game_id="game.id" v-else v-on:click=gameOver() class="btn btn-outline-primary">Game Over</a>
+								<a data-game_id="game.id" v-else v-on:click=continueGame(game) class="btn btn-outline-primary">Game Over</a>
 
 							</td>
 						</tr>

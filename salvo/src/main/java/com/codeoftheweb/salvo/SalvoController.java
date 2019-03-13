@@ -317,8 +317,22 @@ public class SalvoController {
             //alternatively (both ways we shoud get the same Id number:
             //info.put("gamePlayer", argumentGp.getId());
             info.put("locations", salvo.getLocations());
+            info.put("hits", salvo.getLocations().stream().map(loc -> hitsDTO(loc, salvo)).filter(map -> !map.isEmpty()).collect(toList()));
             return info;
         }
+
+
+    public Map<String, Object> hitsDTO(String loc, Salvo salvo){
+            Map<String, Object> info = new LinkedHashMap<>();
+            GamePlayer opponent = getOpponentGp(salvo.getGamePlayer()).orElse(null);
+            if(opponent != null){
+                Ship hitShip = opponent.getShips().stream().filter(ship -> ship.getLocations().contains(loc)).findFirst().orElse(null);
+                if(hitShip != null){
+                    info.put(loc, hitShip.getType());
+                }
+            }
+            return info;
+    }
 
     private Player getLoggedUser(Authentication authentication) {
         return playerRepo.findByUserName(authentication.getName());

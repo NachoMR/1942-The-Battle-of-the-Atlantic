@@ -14,6 +14,7 @@ console.log("window.location es: " + window.location);
 var myVue = new Vue({
 	el: "#app",
 	data: {
+		items: [3, 12],
 		droppedId: "",
 		droppedSize: "",
 		game_view: {},
@@ -21,10 +22,10 @@ var myVue = new Vue({
 		horizontal: true,
 		allships: ["carrier", "battleship", "submarine", "destroyer", "patrol_boat"],
 		placedShips: [{type: "carrier", locations: []},
-									{type: "patrol_boat", locations: []},
+									{type: "battleship", locations: []},
 									{type: "destroyer", locations: []},
 									{type: "submarine", locations: []},		
-									{type: "battleship", locations: []}
+									{type: "patrol_boat", locations: []}
 									],
 		currentSalvo: {turn: "", locations: []},
 		pastSalvoLocations: []
@@ -64,7 +65,7 @@ var myVue = new Vue({
 				//console.log(game_view);
 				myVue.game_view = game_view;
 				showShipsOnGrid(myVue.game_view.ships);
-				showSalvoesOnGrid(myVue.game_view.salvoes);
+				myVue.showSalvoesOnGrid(myVue.game_view.salvoes);
 				myVue.checkForShips();
 				myVue.getPastSalvoLocations();
 				
@@ -134,8 +135,7 @@ var myVue = new Vue({
 			
 		},
 		rotateShips: function(){
-			if(this.horizontal){
-				document.getElementById("shipsToBePlaced").classList.toggle("row");
+			if(this.horizontal){				document.getElementById("shipsToBePlaced").classList.toggle("row");
 				for( var i = 0; i < this.allships.length; i++){
 					var ship = document.getElementById(this.allships[i]);
 					//console.log(ship);
@@ -143,8 +143,7 @@ var myVue = new Vue({
 				}
 				this.horizontal = false;
 			}
-			else{
-				document.getElementById("shipsToBePlaced").classList.toggle("row");
+			else{				document.getElementById("shipsToBePlaced").classList.toggle("row");
 				for( var i = 0; i < this.allships.length; i++){
 					var ship = document.getElementById(this.allships[i]);
 					ship.setAttribute("class", this.allships[i] + "Draggable my-2");
@@ -186,6 +185,49 @@ var myVue = new Vue({
 				alert("You cannot select past salvoes locations");
 			}
 		},
+		showSalvoesOnGrid: function(salvoes){
+	salvoes.forEach(salvo => {
+		if(salvo.gamePlayer == gp){			
+			salvo.locations.forEach(location => {
+					for(var i = 0; i < salvo.hits.length; i++){
+						if(Object.keys(salvo.hits[i])[0] == location){
+							document.getElementById("salvo" + location).classList.remove("missed");
+							document.getElementById("salvo" + location).classList.add("hit");
+							document.getElementById("salvo" + location).innerHTML = salvo.turn;
+							//SWITCH Statement for all five ship types...
+							//for one ship type:
+							//var newHit = document.createElement("div");
+							//newHit.classList.add("hit");
+							//document.getElementById("myShipsStatus")....appendChild(newHit);
+							console.log("Hit on ship type: " + salvo.hits[i][location] + " at " + location + " on turn " + salvo.turn);							
+							break;
+						}
+						else{							
+							document.getElementById("salvo" + location).classList.add("missed");
+							document.getElementById("salvo" + location).innerHTML = salvo.turn;
+						}
+					}
+			})
+		}			
+		else{
+			salvo.locations.forEach(location => {
+				for(var i = 0; i < salvo.hits.length; i++){
+						if(Object.keys(salvo.hits[i])[0] == location){
+							document.getElementById("ship" + location).classList.remove("missed");
+							document.getElementById("ship" + location).classList.add("hit");
+							document.getElementById("ship" + location).innerHTML = salvo.turn;
+							console.log("Hit on ship type: " + salvo.hits[i][location] + " at " + location + " on turn " + salvo.turn);
+							break;
+						}
+						else{								
+							document.getElementById("ship" + location).classList.add("missed");
+							document.getElementById("ship" + location).innerHTML = salvo.turn;
+						}
+				}
+			})
+		}
+	});
+},
 			//drag&drop methods
 		dragStart: function(ev) {
 			console.log("The dragStart 'ev' is: ");
@@ -206,8 +248,7 @@ var myVue = new Vue({
 			//console.log("The droppedId is: " + myVue.droppedId);
   		this.droppedSize = ev.dataTransfer.getData("size");
 			//console.log("The droppedSize is: " + myVue.droppedSize);
-			document.getElementById(this.droppedId).style.visibility = "hidden";			
-			
+			document.getElementById(this.droppedId).classList.add("hidden");			
 			for(var i = 0 ; i < this.droppedSize ; i++){								
 				if(this.horizontal){
 					var letterId = ev.target.id.slice(4, 5);
@@ -225,7 +266,18 @@ var myVue = new Vue({
 					cellId.removeAttribute("v-on:dragover");
 					cellId.removeAttribute("v-on:drop");
 			}
+			},
+		
+		/*
+		showHits(gamePlayer){
+			for(var turn = 1; i <= this.game_view.gamePlayer.length; i++){
+				for(var j = 0; j < hits.length; j++){
+					var td = document.getElementById(hits[j].shiptype + "Hits").tr.children;
+				}
+			}
 		}
+		*/
+		
 	},
 	created: function(){
 		this.getGameView();
@@ -246,26 +298,48 @@ function renderSalvoesTable(){
 function showShipsOnGrid(ships) {
 	ships.forEach(ship => ship.locations.forEach(loc => {
 	document.getElementById("ship" + loc).setAttribute("class", ship.type);
-	document.getElementById("ship" + loc).innerHTML = ship.type.charAt(0).toUpperCase();
+	//document.getElementById("ship" + loc).innerHTML = ship.type.charAt(0).toUpperCase();
 	})
 	);
 }
-
+/*
 function showSalvoesOnGrid(salvoes){
-	//this functions will show/render salvoes for both currentGp and his/her opponentGp
 	salvoes.forEach(salvo => {
-		if(salvo.gamePlayer == gp){
-			//console.log("imprimiendo salvoes del currentGp");
-			//salvo.locations.forEach(location => console.log(location + " " + typeof(location)));			
-			salvo.locations.forEach(location => document.getElementById("salvo" + location).classList.add("salvoes"));
-		}
+		if(salvo.gamePlayer == gp){			
+			salvo.locations.forEach(location => {
+					for(var i = 0; i < salvo.hits.length; i++){
+						if(Object.keys(salvo.hits[i])[0] == location){
+							document.getElementById("salvo" + location).classList.remove("missed");
+							document.getElementById("salvo" + location).classList.add("hit");
+							break;
+						}
+						else{								
+								document.getElementById("salvo" + location).classList.add("missed");
+						}
+					}
+			})
+		}			
 		else{
-			//console.log("imprimiendo salvoes del opponentGp");
-			salvo.locations.forEach(location => document.getElementById("ship" + location).classList.add("salvoes"));
+			salvo.locations.forEach(location => {
+				for(var i = 0; i < salvo.hits.length; i++){
+						if(Object.keys(salvo.hits[i])[0] == location){
+							document.getElementById("ship" + location).classList.remove("missed");
+							document.getElementById("ship" + location).classList.add("hit");
+							break;
+						}
+						else{								
+								document.getElementById("ship" + location).classList.add("missed");
+						}
+				}
+				
+				
+				//document.getElementById("ship" + location).classList.add("salvoes"));
+				
+			})
 		}
 	});
 }
-
+*/
 function searchGridForClass(targetTable, targetClass){
 	var table = document.getElementById(targetTable);
 	var tr = table.getElementsByTagName("tr");
