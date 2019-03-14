@@ -185,49 +185,74 @@ var myVue = new Vue({
 				alert("You cannot select past salvoes locations");
 			}
 		},
-		showSalvoesOnGrid: function(salvoes){
-	salvoes.forEach(salvo => {
-		if(salvo.gamePlayer == gp){			
-			salvo.locations.forEach(location => {
-					for(var i = 0; i < salvo.hits.length; i++){
-						if(Object.keys(salvo.hits[i])[0] == location){
-							document.getElementById("salvo" + location).classList.remove("missed");
-							document.getElementById("salvo" + location).classList.add("hit");
-							document.getElementById("salvo" + location).innerHTML = salvo.turn;
-							//SWITCH Statement for all five ship types...
-							//for one ship type:
-							//var newHit = document.createElement("div");
-							//newHit.classList.add("hit");
-							//document.getElementById("myShipsStatus")....appendChild(newHit);
-							console.log("Hit on ship type: " + salvo.hits[i][location] + " at " + location + " on turn " + salvo.turn);							
+		addHitToStatus: function(children, num, turn){
+			var newHitDiv = document.createElement("div");
+			newHitDiv.classList.add("hit");
+			newHitDiv.innerHTML = turn;
+			children[num].children[0].appendChild(newHitDiv);
+			if(children[num].children[0].children.length == children[num].children[0].dataset.length){
+				children[num].children[1].classList.add("strikethrough");
+			}
+		},
+		renderHitAndMissed: function(grid, shipsStatus, salvo, location){
+			for(var i = 0; i < salvo.hits.length; i++){
+						var tdId = document.getElementById(grid + location);
+						if(Object.keys(salvo.hits[i])[0] == location){							
+							tdId.classList.remove("missed");
+							tdId.classList.add("hit");
+							//tdId.classList.add(salvo.hits[i][location]);
+							var turn = salvo.turn;
+							tdId.innerHTML = turn;
+							var type = salvo.hits[i][location];
+							var children = document.getElementById(shipsStatus).children;
+							//console.log(children);
+							switch(type){
+								case "patrol_boat":
+									//index 4 as per game.html structure
+									this.addHitToStatus(children, 4, turn);
+									break;
+								case "carrier":
+									//index 3 as per game.html structure
+									this.addHitToStatus(children, 3, turn);
+									break;
+								case "submarine":
+									//index 2 as per game.html structure
+									this.addHitToStatus(children, 2, turn);
+									break;
+								case "destroyer":
+									//index 1 as per game.html structure
+									this.addHitToStatus(children, 1, turn);
+									break;
+								case "battleship":
+									//index 0 as per game.html structure
+									this.addHitToStatus(children, 0, turn);
+									break;
+								default:
+									console.log("Error: Ship type not found for this Hit");
+							}							
+							//console.log("Hit on ship type: " + salvo.hits[i][location] + " at " + location + " on turn " + salvo.turn);							
 							break;
 						}
 						else{							
-							document.getElementById("salvo" + location).classList.add("missed");
-							document.getElementById("salvo" + location).innerHTML = salvo.turn;
+							tdId.classList.add("missed");
+							tdId.innerHTML = salvo.turn;
 						}
 					}
-			})
-		}			
-		else{
-			salvo.locations.forEach(location => {
-				for(var i = 0; i < salvo.hits.length; i++){
-						if(Object.keys(salvo.hits[i])[0] == location){
-							document.getElementById("ship" + location).classList.remove("missed");
-							document.getElementById("ship" + location).classList.add("hit");
-							document.getElementById("ship" + location).innerHTML = salvo.turn;
-							console.log("Hit on ship type: " + salvo.hits[i][location] + " at " + location + " on turn " + salvo.turn);
-							break;
-						}
-						else{								
-							document.getElementById("ship" + location).classList.add("missed");
-							document.getElementById("ship" + location).innerHTML = salvo.turn;
-						}
+		},
+		showSalvoesOnGrid: function(salvoes){
+			salvoes.forEach(salvo => {
+				if(salvo.gamePlayer == gp){
+					salvo.locations.forEach(location => {
+						this.renderHitAndMissed("salvo","opponentShipsStatus", salvo, location);
+					})
+				}			
+				else{
+					salvo.locations.forEach(location => {
+						this.renderHitAndMissed("ship", "myShipsStatus", salvo, location);
+					})
 				}
-			})
-		}
-	});
-},
+			});
+		},
 			//drag&drop methods
 		dragStart: function(ev) {
 			console.log("The dragStart 'ev' is: ");
