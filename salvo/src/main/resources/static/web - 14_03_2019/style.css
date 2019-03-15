@@ -1,7 +1,7 @@
 /* ##### My VARIABLES ##### */
 :root{
-  --cell-width: 45px;
-  --cell-height: 45px;
+  --cell-width: 30px;
+  --cell-height: 30px;
 	--carrier-color: #6a89cc;
 	--battleship-color: #a29bfe;
 	--submarine-color: #82ccdd;
@@ -18,39 +18,59 @@ h4{
 	color: white;
 }
 
-/*
-.playingBoard{
-	border: 1px solid blue;
-}
-*/
-
 td{
 	width: var(--cell-width);
-	height: var(--cell-height);	
+	height: var(--cell-height);
 	border: 1px solid red;
 }
 
-.carrier_onGrid{
-	background-color: var(--carrier-color);
-}
-.battleship_onGrid{
-	background-color: var(--battleship-color);
-}
-.submarine_onGrid{
-	background-color: var(--submarine-color);
-}
-.destroyer_onGrid{
-	background-color: var(--destroyer-color);
-}
-.patrol_boat_onGrid{
-	background-color: var(--patrol_boat-color);
-}
-.salvoes{
-	background-image: url(explosion.gif);
-	background-size: contain;
-	background-repeat: no-repeat;
+/* ########## SHIP STATUS ########## */
+
+.strikethrough{
+	text-decoration: line-through;
 }
 
+.status>div{
+	/*display: inline-block;*/
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	justify-content: flex-start;
+	align-content: center;
+}
+
+/*
+.status>div>div{
+	width: var(--cell-width);
+	height: var(--cell-height);
+	background-image: url(hit.gif);
+	background-repeat: no-repeat;
+	background-size: calc(var(--cell-width)/1.1) calc(var(--cell-height)/1.1);
+	background-position: center;
+	font-weight: bold;
+	color: black;
+	border-radius: calc(var(--cell-width)/2);
+	vertical-align: text-bottom;
+}
+*/
+
+/* ########## SHIPS ########## */
+
+.carrier{
+	background-color: var(--carrier-color);
+}
+.battleship{
+	background-color: var(--battleship-color);
+}
+.submarine{
+	background-color: var(--submarine-color);
+}
+.destroyer{
+	background-color: var(--destroyer-color);
+}
+.patrol_boat{
+	background-color: var(--patrol_boat-color);
+}
 
 .carrierDraggable{
 	width: calc(var(--cell-width)*5);
@@ -111,6 +131,40 @@ td{
 	height: calc(var(--cell-height)*2);
 	background-color: var(--patrol_boat-color);
 }
+
+/* ########## SALVOES / HITS / MISSED ########## */
+
+.hit{
+	width: var(--cell-width);
+	height: var(--cell-height);	
+	background-image: url(hit.gif);
+	background-repeat: no-repeat;
+	background-size: calc(var(--cell-width)/1.1) calc(var(--cell-height)/1.1);
+	background-position: center;
+	font-weight: bold;	
+	color: black;
+	vertical-align: text-bottom;
+}
+
+.salvoes{
+	background-image: url(salvo.gif);
+	background-repeat: no-repeat;
+	background-size: contain;
+	background-position: center;
+	/*background-size: calc(var(--cell-width)/1) calc(var(--cell-height)/1);*/
+}
+
+.missed{
+	background-image: url(missed.gif);
+	background-repeat: no-repeat;
+	background-size: contain;
+	font-weight: bold;
+}
+
+.hidden{
+	visibility: hidden;
+}
+
 
 
 

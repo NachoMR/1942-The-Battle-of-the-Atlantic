@@ -13,7 +13,8 @@ console.log("window.location es: " + window.location);
 
 var myVue = new Vue({
 	el: "#app",
-	data: {		
+	data: {
+		items: [3, 12],
 		droppedId: "",
 		droppedSize: "",
 		game_view: {},
@@ -53,7 +54,7 @@ var myVue = new Vue({
         throw new Error("HTTP error, status = " + response.status);
       	}
 				return response.json();
-				console.log("Your Game Info Status: " + response.status);
+				alert("Your Game Info Status: " + response.status);
 			})
 			.then(function (game_view) {
 				if(game_view.error){
@@ -99,13 +100,10 @@ var myVue = new Vue({
 						body: JSON.stringify(this.placedShips)
 					})
 				.then(function(response){				
-					console.log("Adding Ships status" + response.status);
-					return response.json();					
+					alert("Adding Ships status" + response.status);
+					//return response.json();					
 				})
 				.then(function (data) {
-					if(data.error){
-						alert(data.error);
-					}
 					document.location.href='/web/game.html?gp=' + gp;
 				})
 				.catch(function (error) {
@@ -125,14 +123,11 @@ var myVue = new Vue({
 						body: JSON.stringify(this.currentSalvo)
 					})
 				.then(function(response){				
-					console.log("Adding Salvo status" + response.status);
-					return response.json();					
+					alert("Adding Salvo status" + response.status);
+					//return response.json();					
 				})
 				.then(function (data) {
 					//alert("Let's reload the page...");
-				if(data.error){
-					alert(data.error);
-				};
 					document.location.href='/web/game.html?gp=' + gp;
 				})
 				.catch(function (error) {
@@ -148,7 +143,7 @@ var myVue = new Vue({
 			);	
 		},
 		setSalvoLocation: function(ev){
-			//console.log(ev.target.id);
+			console.log(ev.target.id);
 			var td = ev.target;
 			var tdId = 	ev.target.id;
 			var currentSalvoLocations = this.currentSalvo.locations;
@@ -157,7 +152,7 @@ var myVue = new Vue({
 					if(currentSalvoLocations.length < 5){
 						currentSalvoLocations.push(tdId.slice(5, 8));
 						td.classList.add("salvoes");
-						//console.log(this.currentSalvo.locations);
+						console.log(this.currentSalvo.locations);
 					}
 					else{
 						alert("You can only fire 5 times in this turn")
@@ -165,10 +160,10 @@ var myVue = new Vue({
 				}
 				else{
 					var index = currentSalvoLocations.indexOf(tdId.slice(5, 8));
-					//console.log("index is: ", index);
+					console.log("index is: ", index);
 					currentSalvoLocations.splice(index, 1);
 					td.classList.remove("salvoes");
-					//console.log(this.currentSalvo.locations);
+					console.log(this.currentSalvo.locations);
 				}
 			}
 			else{
@@ -182,7 +177,6 @@ var myVue = new Vue({
 			children[num].children[0].appendChild(newHitDiv);
 			if(children[num].children[0].children.length == children[num].children[0].dataset.length){
 				children[num].children[1].classList.add("strikethrough");
-				children[num].children[0].classList.add("sinking");
 			}
 		},
 		//this.renderHitAndMissed("salvo","opponentShipsStatus", salvo, location);
@@ -253,24 +247,19 @@ var myVue = new Vue({
 				}
 			});
 		},
-		//rotateShips just below needs REFACTOR to avoid DRY!!
 		rotateShips: function(){
-			if(this.horizontal){
-				document.getElementById("shipsToBePlaced").classList.toggle("row");
+			if(this.horizontal){				document.getElementById("shipsToBePlaced").classList.toggle("row");
 				for( var i = 0; i < this.allships.length; i++){
 					var ship = document.getElementById(this.allships[i]);
 					//console.log(ship);
-					ship.classList.toggle(this.allships[i] + "DraggableVertical");
-					ship.classList.toggle(this.allships[i] + "Draggable");
+					ship.setAttribute("class", this.allships[i] + "DraggableVertical mt-2 mr-2");
 				}
 				this.horizontal = false;
 			}
-			else{
-				document.getElementById("shipsToBePlaced").classList.toggle("row");
+			else{				document.getElementById("shipsToBePlaced").classList.toggle("row");
 				for( var i = 0; i < this.allships.length; i++){
 					var ship = document.getElementById(this.allships[i]);
-					ship.classList.toggle(this.allships[i] + "DraggableVertical");
-					ship.classList.toggle(this.allships[i] + "Draggable");
+					ship.setAttribute("class", this.allships[i] + "Draggable my-2");
 				}
 					this.horizontal = true;
 			}
@@ -281,7 +270,6 @@ var myVue = new Vue({
 			console.log(ev);
   		ev.dataTransfer.setData("text", ev.target.id);
   		ev.dataTransfer.setData("size", ev.target.dataset.length);
-			//setTimeout(() => (ev.target.classList.add("hidden")),0);
 			//console.log("la longitud es: " + ev.target.dataset.length);
 		},
 		dragOver: function(ev) {
@@ -315,6 +303,17 @@ var myVue = new Vue({
 					cellId.removeAttribute("v-on:drop");
 			}
 			},
+		
+		/*
+		showHits(gamePlayer){
+			for(var turn = 1; i <= this.game_view.gamePlayer.length; i++){
+				for(var j = 0; j < hits.length; j++){
+					var td = document.getElementById(hits[j].shiptype + "Hits").tr.children;
+				}
+			}
+		}
+		*/
+		
 	},
 	created: function(){
 		this.getGameView();
@@ -377,7 +376,7 @@ function showSalvoesOnGrid(salvoes){
 	});
 }
 */
-function 	searchGridForClass(targetTable, targetClass){
+function searchGridForClass(targetTable, targetClass){
 	var table = document.getElementById(targetTable);
 	var tr = table.getElementsByTagName("tr");
 	var shipArray = [];

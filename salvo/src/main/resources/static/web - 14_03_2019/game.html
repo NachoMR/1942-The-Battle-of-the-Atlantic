@@ -37,49 +37,49 @@
 			<!--<h4 class="mt-3">Your Fleet Status</h4>-->
 					<div id="myShipsStatus" class="d-flex flex-row justify-content-center flex-wrap mt-3">
 						<div class="status mx-1 mb-1 d-flex flex-column align-items-center">
-							<div class="battleshipDraggable" data-length="4">
+							<div class="battleshipHits battleshipDraggable" data-length="4">
 								
 							</div>
-							<h6>BATTLESHIP</h6>
+							<h5>Battleship</h5>
 						</div>
 						<div class="status mx-1 mb-1 d-flex flex-column align-items-center">
-							<div class="destroyerDraggable" data-length="3">
+							<div class="destroyerHits destroyerDraggable" data-length="3">
 									
 							</div>
-							<h6>DESTROYER</h6>
+							<h5>Destroyer</h5>
 						</div>
 						<div class="status mx-1 mb-1 d-flex flex-column align-items-center">
-							<div class="submarineDraggable" data-length="3">
+							<div class="submarineHits submarineDraggable" data-length="3">
 								         
 							</div>
-							<h6>SUBMARINE</h6>
+							<h5>submarine</h5>
 						</div>
 						<div class="status mx-1 mb-1 d-flex flex-column align-items-center">
-							<div class="carrierDraggable" data-length="5">
+							<div class="carrierHits carrierDraggable" data-length="5">
 								
 							</div>
-							<h6>CARRIER</h6>
+							<h5>Carrier</h5>
 						</div>
 						<div class="status mx-1 mb-1 d-flex flex-column align-items-center">
 							<div class="patrol_boatHits patrol_boatDraggable" data-length="2">
 								
 							</div>
-							<h6>PATROL BOAT</h6>
+							<h5>Patrol Boat</h5>
 						</div>
 					</div>
 					
 				</div>
 				<div v-if="placingShips" class="col-sm text-center">
-					<h4>Place your Fleet</h4>
+					<h4>Place your Ships</h4>
 					<button v-on:click="rotateShips()">Rotate Ships</button>
 					<button v-on:click="reposition()">Reposition</button>
 					<button v-on:click="postShips()">Start Firing</button>
 					<div id="shipsToBePlaced">
-						<div id="carrier" data-length="5" class="carrierDraggable m-3" draggable="true" v-on:dragstart="dragStart(this.event)">Carrier</div>
-						<div id="battleship" data-length=4 class="battleshipDraggable m-3" draggable="true" v-on:dragstart="dragStart(this.event)">Battleship</div>
-						<div id="submarine" data-length=3 class="submarineDraggable m-3" draggable="true" v-on:dragstart="dragStart(this.event)">Submarine</div>
-						<div id="destroyer" data-length=3 class="destroyerDraggable m-3" draggable="true" v-on:dragstart="dragStart(this.event)">Destroyer</div>
-						<div id="patrol_boat" data-length=2 class="patrol_boatDraggable m-3" draggable="true" v-on:dragstart="dragStart(this.event)">Patrol B.</div>
+						<div id="carrier" data-length="5" class="carrierDraggable my-2" draggable="true" v-on:dragstart="dragStart(this.event)">Carrier</div>
+						<div id="battleship" data-length=4 class="battleshipDraggable my-2" draggable="true" v-on:dragstart="dragStart(this.event)">Battleship</div>
+						<div id="submarine" data-length=3 class="submarineDraggable my-2" draggable="true" v-on:dragstart="dragStart(this.event)">Submarine</div>
+						<div id="destroyer" data-length=3 class="destroyerDraggable my-2" draggable="true" v-on:dragstart="dragStart(this.event)">Destroyer</div>
+						<div id="patrol_boat" data-length=2 class="patrol_boatDraggable my-2" draggable="true" v-on:dragstart="dragStart(this.event)">Patrol Boat</div>
 					</div>
 				</div>
 
@@ -94,34 +94,34 @@
 			<!--h4 class="mt-3">Opponent's Fleet Status</h4>-->
 					<div id="opponentShipsStatus" class="d-flex flex-row justify-content-center flex-wrap mt-3">
 						<div class="status mx-1 mb-1 d-flex flex-column align-items-center">
-							<div class="battleshipDraggable" data-length="4">
+							<div class="battleshipHits battleshipDraggable" data-length="4">
 								
 							</div>
-							<h6>BATTLESHIP</h6>
+							<h5>Battleship</h5>
 						</div>
 						<div class="status mx-1 mb-1 d-flex flex-column align-items-center">
-							<div class="destroyerDraggable" data-length="3">
+							<div class="destroyerHits destroyerDraggable" data-length="3">
 									
 							</div>
-							<h6>DESTROYER</h6>
+							<h5>Destroyer</h5>
 						</div>
 						<div class="status mx-1 mb-1 d-flex flex-column align-items-center">
-							<div class="submarineDraggable" data-length="3">
+							<div class="submarineHits submarineDraggable" data-length="3">
 								         
 							</div>
-							<h6>SUBMARINE</h6>
+							<h5>submarine</h5>
 						</div>
 						<div class="status mx-1 mb-1 d-flex flex-column align-items-center">
-							<div class="carrierDraggable" data-length="5">
+							<div class="carrierHits carrierDraggable" data-length="5">
 								
 							</div>
-							<h6>CARRIER</h6>
+							<h5>Carrier</h5>
 						</div>
 						<div class="status mx-1 mb-1 d-flex flex-column align-items-center">
 							<div class="patrol_boatHits patrol_boatDraggable" data-length="2">
 								
 							</div>
-							<h6>PATROL BOAT</h6>
+							<h5>Patrol Boat</h5>
 						</div>
 					</div>
 

@@ -194,11 +194,14 @@ var myVue = new Vue({
 					break;
 				}
 			}
-			document.location.href="/web/game.html?gpContinueGame=" + gpContinueGame;		
-		},		
+			/*document.location.href="/web/game.html?gpContinueGame=" + gpContinueGame;	*/	
+			document.location.href="/web/game.html?gp=" + gpContinueGame;		
+		},
+		/*
 		gameOver: function(){			
 			document.location.href="/web/games.html";
 		},
+		*/
 		createGame: function(){
 			fetch('/api/games', {
         credentials: 'include',       

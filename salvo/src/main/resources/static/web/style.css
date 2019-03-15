@@ -30,6 +30,13 @@ td{
 	text-decoration: line-through;
 }
 
+.sinking{
+/*background-color: red !important;*/
+	transform: rotate(20deg);
+	z-index: -1;
+	/*transform: translate(10px, 10px);*/
+}
+
 .status>div{
 	/*display: inline-block;*/
 	display: flex;
@@ -105,31 +112,36 @@ td{
 .carrierDraggableVertical{
 	width: var(--cell-width);
 	height: calc(var(--cell-height)*5);
-	background-color: var(--carrier-color);	
+	background-color: var(--carrier-color);
+	writing-mode: vertical-rl;
 }
 
 .battleshipDraggableVertical{
 	width: var(--cell-width);
 	height: calc(var(--cell-height)*4);
 	background-color: var(--battleship-color);
+	writing-mode: vertical-rl;
 }
 
 .submarineDraggableVertical{
 	width: var(--cell-width);
 	height: calc(var(--cell-height)*3);
 	background-color: var(--submarine-color);
+	writing-mode: vertical-rl;
 }
 
 .destroyerDraggableVertical{
 	width: var(--cell-width);
 	height: calc(var(--cell-height)*3);
 	background-color: var(--destroyer-color);
+	writing-mode: vertical-rl;
 }
 
 .patrol_boatDraggableVertical{
 	width: var(--cell-width);
 	height: calc(var(--cell-height)*2);
 	background-color: var(--patrol_boat-color);
+	writing-mode: vertical-rl;
 }
 
 /* ########## SALVOES / HITS / MISSED ########## */
