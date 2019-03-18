@@ -102,7 +102,7 @@ var myVue = new Vue({
 				if (!data.ok) {
         throw new Error("HTTP error, status = " + data.status);
       	}
-				alert("Log In Status: " + data.status);
+				console.log("Log In Status: " + data.status);
 				myVue.auth = true;				
 				//we want to refresh the page:			
 				document.location.reload();
@@ -129,7 +129,7 @@ var myVue = new Vue({
         throw new Error("HTTP error, status = " + data.status);
       	}
         console.log('Fetch succeeded and with server response: ', data);
-				alert("Sign Up Status: " + data.status);				
+				console.log("Sign Up Status: " + data.status);				
 				//second fetch is for authentication of the this new user
 				myVue.logInUser(myVue.newUserInput);
 				//window.location.reload();
@@ -152,7 +152,7 @@ var myVue = new Vue({
         throw new Error("HTTP error, status = " + data.status);
       	}
         console.log('Fetch succeeded and with server response: ', data);
-				alert("Log Out Status: " + data.status);				
+				console.log("Log Out Status: " + data.status);				
 				myVue.auth = false;
 				document.location.reload();
     })
@@ -172,30 +172,56 @@ var myVue = new Vue({
     		})
 				
 			.then(function(response){
-				alert("Join Game status: " + response.status);
-				if (!response.ok) {
-        throw new Error("HTTP error, status = " + response.status);
-      	}
+				console.log("Join Game status: " + response.status);
+				//if (!response.ok) {
+        //throw new Error("HTTP error, status = " + response.status);
+      	//}
 				return response.json();				
 			})
-    .then(function (data) {			
-				alert("New player joined. The new gamePlayer es: " + data.gpid);				
-				document.location.href="/web/game.html?gp=" + data.gpid;
-    })
-    .catch(function (error) {
+    	.then(function (data) {
+				if(data.error){
+					alert(data.error);
+				}
+				else{
+					console.log("New player joined. The new gamePlayer es: " + data.gpid);				
+					document.location.href="/web/game.html?gp=" + data.gpid;
+				}
+				
+    	})
+    	.catch(function (error) {
         console.log('Request failure: ', error);
-    });
+    	});
 		},		
 		continueGame: function(game){
 			var gpContinueGame = "";
 			for(var i = 0; i < game.gameplayers.length; i++){
 				if(game.gameplayers[i].player.id == this.gamesJson.logged_player.pid){
 					gpContinueGame = game.gameplayers[i].id;
-					break;
 				}
 			}
-			/*document.location.href="/web/game.html?gpContinueGame=" + gpContinueGame;	*/	
-			document.location.href="/web/game.html?gp=" + gpContinueGame;		
+			if(gpContinueGame == ""){
+				alert("You are not a player in this game and are not allowed to enter the game");
+				document.location.href = "/web/games.html";
+			}
+			else{
+				document.location.href="/web/game.html?gp=" + gpContinueGame;
+			}
+				
+			
+			//for(var i = 0; i < game.gameplayers.length; i++){
+			//	if(game.gameplayers[i].player.id == //this.gamesJson.logged_player.pid){
+			//		gpContinueGame = game.gameplayers[i].id;
+			//		document.location.href="/web/game.html?gp=" + gpContinueGame;
+			//		break;
+			//	}
+			//	else{
+			//		alert("You are not a player in this game and are not allowed //enter the game");
+			//		document.location.href = "/web/games.html";
+			//	}
+			//}
+			
+		
+					
 		},
 		/*
 		gameOver: function(){			
@@ -212,17 +238,17 @@ var myVue = new Vue({
         body: ""
     })
     .then(function (response) {
-				if (!response.ok) {
-        throw new Error("HTTP error, status = " + response.status);
-      	}
+//				if (!response.ok) {
+//        throw new Error("HTTP error, status = " + response.status);
+//      	}
        return response.json();
     })
 			.then(function(data){
 				var gpJustCreated = data.gpid;
-				console.log("El retorno del Post me trae un data.gp = " + gpJustCreated);
-				alert("New Game created with new gamePlayer: " + gpJustCreated);
+				alert("El retorno del Post me trae un data.gp = " + gpJustCreated);
+				//alert("New Game created with new gamePlayer: " + gpJustCreated);
 				//myVue.getGamesInfo();
-				window.location.href = "/web/game.html?gp=" + gpJustCreated;
+				document.location.href = "/web/game.html?gp=" + gpJustCreated;
 			})
     .catch(function (error) {
         console.log('Request failure: ', error);

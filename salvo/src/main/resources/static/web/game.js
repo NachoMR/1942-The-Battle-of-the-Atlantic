@@ -44,7 +44,8 @@ var myVue = new Vue({
 		reposition: function(){
 			document.location.href = "/web/game.html?gp=" + gp;
 		},
-		getGameView: function () {			
+		getGameView: function () {
+			console.log("El gp leido desde la url es: " + gp);
 		fetch('/api/game_view/' + gp, {
 				method: 'GET'
 			})
@@ -73,7 +74,10 @@ var myVue = new Vue({
 				}
 			})
 			.catch(function (error) {
+			  console.log('Request failure: ', error);
 				alert(error);
+				//window.location.href = "games.html";
+
 			});			
 	},		
 		postShips: function(){
@@ -129,10 +133,9 @@ var myVue = new Vue({
 					return response.json();					
 				})
 				.then(function (data) {
-					//alert("Let's reload the page...");
-				if(data.error){
-					alert(data.error);
-				};
+					if(data.error){
+						alert(data.error);
+					};
 					document.location.href='/web/game.html?gp=' + gp;
 				})
 				.catch(function (error) {
@@ -394,14 +397,3 @@ function 	searchGridForClass(targetTable, targetClass){
 	}
 	return shipArray;
 }
-
-
-
-
-
-
-
-
-
-
-
