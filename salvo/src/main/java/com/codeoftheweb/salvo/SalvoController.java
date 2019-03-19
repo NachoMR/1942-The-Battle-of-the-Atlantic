@@ -116,6 +116,7 @@ public class SalvoController {
     @RequestMapping(path = "/games/players/{gamePlayerId}/ships", method = RequestMethod.POST)
     public ResponseEntity<Map<String, Object>> addShips(@PathVariable Long gamePlayerId, Authentication authentication, @RequestBody Set<Ship> shipsList) {
         GamePlayer currentGamePlayer = gamePlayerRepo.findById(gamePlayerId).orElse(null);
+
         if(!isGuest(authentication)){
             if(currentGamePlayer != null){
                 if(currentGamePlayer.getPlayer().equals( getLoggedUser(authentication))){
@@ -197,8 +198,9 @@ public class SalvoController {
         return result;
     }
     private Boolean checkAlignement(Ship ship){
-        Boolean result = true;
-        return result;
+        //Boolean result = true;
+        //return result;
+        return true;
     }
 //    private Boolean checkAlignement(Ship ship){
 //        Boolean result = false;
@@ -233,7 +235,7 @@ public class SalvoController {
             if(currentGamePlayer != null){
                 if(currentGamePlayer.getPlayer().equals(getLoggedUser(authentication))){
                     if(getOpponentGp(currentGamePlayer).orElse(null) != null) {
-                        if (currentGamePlayer.getShips().size() == 5 && getOpponentGp(currentGamePlayer).orElse(null).getShips().size() == 5) {
+                        if (currentGamePlayer.getShips().size() > 0 && getOpponentGp(currentGamePlayer).orElse(null).getShips().size() > 0) {
 
                             if (thisSalvo.getLocations().size() <= 5) {
 

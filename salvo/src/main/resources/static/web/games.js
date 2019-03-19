@@ -206,22 +206,6 @@ var myVue = new Vue({
 			else{
 				document.location.href="/web/game.html?gp=" + gpContinueGame;
 			}
-				
-			
-			//for(var i = 0; i < game.gameplayers.length; i++){
-			//	if(game.gameplayers[i].player.id == //this.gamesJson.logged_player.pid){
-			//		gpContinueGame = game.gameplayers[i].id;
-			//		document.location.href="/web/game.html?gp=" + gpContinueGame;
-			//		break;
-			//	}
-			//	else{
-			//		alert("You are not a player in this game and are not allowed //enter the game");
-			//		document.location.href = "/web/games.html";
-			//	}
-			//}
-			
-		
-					
 		},
 		/*
 		gameOver: function(){			
