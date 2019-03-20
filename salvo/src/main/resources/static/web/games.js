@@ -189,7 +189,7 @@ var myVue = new Vue({
 				
     	})
     	.catch(function (error) {
-        console.log('Request failure: ', error);
+        alert('Request failure: ', error);
     	});
 		},		
 		continueGame: function(game){

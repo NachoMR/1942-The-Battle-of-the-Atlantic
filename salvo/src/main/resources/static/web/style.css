@@ -1,7 +1,7 @@
 /* ##### My VARIABLES ##### */
 :root{
-  --cell-width: 30px;
-  --cell-height: 30px;
+  --cell-width: 40px;
+  --cell-height: 40px;
 	--carrier-color: #6a89cc;
 	--battleship-color: #a29bfe;
 	--submarine-color: #82ccdd;
@@ -13,8 +13,8 @@
 }
 /* #################### */
 
-h4{
-	background-color: black;
+h4, h3{
+	background-color: #17a2b8;
 	color: white;
 }
 
@@ -24,42 +24,36 @@ td{
 	border: 1px solid red;
 }
 
-/* ########## SHIP STATUS ########## */
-
-.strikethrough{
-	text-decoration: line-through;
+.notifications{	
+	width: 160px;
+	height: calc(var(--cell-height)*12);
+	background-color: #dfe6e9;
+	border-radius: 10px;
+}
+.notifications button{
+	margin-top: var(--cell-height);
+	width: calc(var(--cell-width)*3.5);
+  height: var(--cell-height);
 }
 
-.sinking{
-/*background-color: red !important;*/
-	transform: rotate(20deg);
-	z-index: -1;
-	/*transform: translate(10px, 10px);*/
+.notifications span{
+	text-align: center;
+	margin-top: var(--cell-height);
+/*	border: 1px solid black;*/
+	background-color: #b2bec3;
+	border-radius: 10px;
 }
 
-.status>div{
-	/*display: inline-block;*/
-	display: flex;
-	flex-direction: row;
-	flex-wrap: nowrap;
-	justify-content: flex-start;
-	align-content: center;
+
+
+
+img{
+/*	border: 1px solid black;*/
+/*	border-radius: 2px;*/
+/*	margin: 1.5px;*/
+	height: calc(var(--cell-height)*1);
 }
 
-/*
-.status>div>div{
-	width: var(--cell-width);
-	height: var(--cell-height);
-	background-image: url(hit.gif);
-	background-repeat: no-repeat;
-	background-size: calc(var(--cell-width)/1.1) calc(var(--cell-height)/1.1);
-	background-position: center;
-	font-weight: bold;
-	color: black;
-	border-radius: calc(var(--cell-width)/2);
-	vertical-align: text-bottom;
-}
-*/
 
 /* ########## SHIPS ########## */
 
@@ -176,6 +170,50 @@ td{
 .hidden{
 	visibility: hidden;
 }
+
+/* ########## SHIP STATUS ########## */
+
+.sinking{
+/*background-color: red !important;*/
+	transform: rotate(5deg);
+	z-index: -1;
+	background-color: #d63031;
+	/*transform: translate(10px, 10px);*/
+}
+
+.strikethrough{
+	text-decoration: line-through;
+	z-index: 1;
+}
+
+.status>div{
+	/*display: inline-block;*/
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	justify-content: flex-start;
+	align-content: center;
+}
+
+.reddish{
+	background-color: red;
+}
+
+
+/*
+.status>div>div{
+	width: var(--cell-width);
+	height: var(--cell-height);
+	background-image: url(hit.gif);
+	background-repeat: no-repeat;
+	background-size: calc(var(--cell-width)/1.1) calc(var(--cell-height)/1.1);
+	background-position: center;
+	font-weight: bold;
+	color: black;
+	border-radius: calc(var(--cell-width)/2);
+	vertical-align: text-bottom;
+}
+*/
 
 
 

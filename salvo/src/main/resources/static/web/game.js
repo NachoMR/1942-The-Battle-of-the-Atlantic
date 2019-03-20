@@ -50,11 +50,11 @@ var myVue = new Vue({
 				method: 'GET'
 			})
 			.then(function (response) {
-				if (!response.ok) {
-        throw new Error("HTTP error, status = " + response.status);
-      	}
-				return response.json();
-				console.log("Your Game Info Status: " + response.status);
+				//if (!response.ok) {
+        //throw new Error("HTTP error, status = " + response.status);
+      	//}
+			console.log("Your Game Info Status: " + response.status);
+				return response.json();				
 			})
 			.then(function (game_view) {
 				if(game_view.error){
@@ -68,7 +68,6 @@ var myVue = new Vue({
 				myVue.checkForShips();
 				myVue.getPastSalvoLocations();
 				myVue.showSalvoesOnGrid(myVue.game_view.salvoes);
-				//myVue.checkForShips();
 				//myVue.getPastSalvoLocations();
 				
 				}
@@ -188,7 +187,6 @@ var myVue = new Vue({
 				children[num].children[0].classList.add("sinking");
 			}
 		},
-		//this.renderHitAndMissed("salvo","opponentShipsStatus", salvo, location);
 		renderHitAndMissed: function(grid, shipsStatus, salvo, location){
 			var tdId = document.getElementById(grid + location);
 			var turn = salvo.turn;
@@ -280,15 +278,25 @@ var myVue = new Vue({
 		},
 			//drag&drop methods
 		dragStart: function(ev) {
+		
 			console.log("The dragStart 'ev' is: ");
 			console.log(ev);
+			console.log(ev.offsetX);
+			//console.log(ev.offsetY);
   		ev.dataTransfer.setData("text", ev.target.id);
   		ev.dataTransfer.setData("size", ev.target.dataset.length);
 			//setTimeout(() => (ev.target.classList.add("hidden")),0);
 			//console.log("la longitud es: " + ev.target.dataset.length);
 		},
 		dragOver: function(ev) {
-  		ev.preventDefault();			
+  		ev.preventDefault();
+			ev.target.classList.add("reddish");
+			//console.log(ev.offsetX);
+			//console.log(ev.offsetY);
+		},
+		dragLeave: function(ev){
+			//ev.preventDefault();
+			ev.target.classList.remove("reddish");
 		},
 		drop: function(ev) {
 			console.log("The drop 'ev' is: ");
@@ -328,7 +336,7 @@ var myVue = new Vue({
 // ====================== FUNCTIONS ======================
 
 function renderShipsTable(){
-	document.getElementById("shipLocations").innerHTML = "<tr><td></td>" + colNumbers.map(col => "<td>" + col + "</td>").join("") + "</tr>" + rowLetters.map(row => "<tr><td>" + row + "</td>" + colNumbers.map(col => "<td id='ship" + row + col + "' v-on:dragover='dragOver(this.event)' v-on:drop='drop(this.event)'>" + "</td>").join("") + "</tr>").join("");
+	document.getElementById("shipLocations").innerHTML = "<tr><td></td>" + colNumbers.map(col => "<td>" + col + "</td>").join("") + "</tr>" + rowLetters.map(row => "<tr><td>" + row + "</td>" + colNumbers.map(col => "<td id='ship" + row + col + "' v-on:dragover='dragOver(this.event)' v-on:drop='drop(this.event)' v-on:dragleave='dragLeave(this.event)'>" + "</td>").join("") + "</tr>").join("");
 }
 
 function renderSalvoesTable(){
