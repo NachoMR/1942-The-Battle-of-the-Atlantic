@@ -36,23 +36,7 @@
 	}
 }
 
-/* ########## RESPONSIVE TEXT ########## */
-
-h4{
-	font-size: 1.607vw;
-}
-h5{
-	font-size: 1.339vw;
-}
-h6, p, td, div{
-	font-size: 1.071vw;
-}
-.btn{
-	font-size: 0.9vw;
-}
-
 /* #################### */
-
 .nacho{
 	border: 1px dashed yellow;
 }
@@ -69,14 +53,10 @@ body{
 }
 
 h4{
+/*	margin-top: 20px;*/
 	width: calc(var(--cell-width)*11);
 	background-color: #17a2b8;
 	color: white;
-	padding: 0px 0px 4px 0px;
-}
-
-#myShipsStatus, #opponentShipsStatus{
-		width: calc(var(--cell-width)*11);
 }
 
 td{
@@ -87,33 +67,27 @@ td{
 
 .notifications{
 /*	background-color: #dfe6e9;*/
-	border-radius: 20px;
+	border-radius: 10px;
 /*	border: 5px dashed grey;*/
 /*	margin-top: calc(var(--cell-width)*2);*/
+}
+button{
+	margin-top: calc(var(--cell-height)*0.2);
+	width: calc(var(--cell-width)*3.5);
+  height: var(--cell-height);
 }
 
 .notifications span{
 	text-align: center;
 	margin-top: calc(var(--cell-height)*0.5);
 /*	border: 1px solid black;*/
-	background-color: rgba(220,216,172,0.5);
+	background-color: #b2bec3;
 	border-radius: 10px;
 	padding: 10px;
 }
 
 img{
 	height: calc(var(--cell-height)*1);
-}
-
-button{
-	margin-top: calc(var(--cell-height)*0.2);
-	width: calc(var(--cell-width)*3);
-  height: var(--cell-height);
-}
-
-.loader{
-	margin-top: calc(var(--cell-height)*0.2);
-	height: var(--cell-height);
 }
 
 
@@ -139,38 +113,30 @@ button{
 	width: calc(var(--cell-width)*5);
 	height: var(--cell-height);
 	background-color: var(--carrier-color);
-	border-radius: 5px;
 }
 
 .battleshipDraggable{
 	width: calc(var(--cell-width)*4);
 	height: var(--cell-height);
 	background-color: var(--battleship-color);
-	border-radius: 5px;
-
 }
 
 .submarineDraggable{
 	width: calc(var(--cell-width)*3);
 	height: var(--cell-height);
 	background-color: var(--submarine-color);
-		border-radius: 5px;
 }
 
 .destroyerDraggable{
 	width: calc(var(--cell-width)*3);
 	height: var(--cell-height);
 	background-color: var(--destroyer-color);
-	border-radius: 5px;
-
 }
 
 .patrol_boatDraggable{
 	width: calc(var(--cell-width)*2);
 	height: var(--cell-height);
 	background-color: var(--patrol_boat-color);
-	border-radius: 5px;
-
 }
 
 .carrierDraggableVertical{
@@ -178,8 +144,6 @@ button{
 	height: calc(var(--cell-height)*5);
 	background-color: var(--carrier-color);
 	writing-mode: vertical-rl;
-	border-radius: 5px;
-
 }
 
 .battleshipDraggableVertical{
@@ -187,7 +151,6 @@ button{
 	height: calc(var(--cell-height)*4);
 	background-color: var(--battleship-color);
 	writing-mode: vertical-rl;
-	border-radius: 5px;
 }
 
 .submarineDraggableVertical{
@@ -195,7 +158,6 @@ button{
 	height: calc(var(--cell-height)*3);
 	background-color: var(--submarine-color);
 	writing-mode: vertical-rl;
-	border-radius: 5px;
 }
 
 .destroyerDraggableVertical{
@@ -203,7 +165,6 @@ button{
 	height: calc(var(--cell-height)*3);
 	background-color: var(--destroyer-color);
 	writing-mode: vertical-rl;
-	border-radius: 5px;
 }
 
 .patrol_boatDraggableVertical{
@@ -211,7 +172,6 @@ button{
 	height: calc(var(--cell-height)*2);
 	background-color: var(--patrol_boat-color);
 	writing-mode: vertical-rl;
-	border-radius: 5px;
 }
 
 /* ########## SALVOES / HITS / MISSED ########## */
@@ -233,10 +193,9 @@ button{
 	background-repeat: no-repeat;
 	background-size: contain;
 	background-position: center;
-	width: var(--cell-width);
-	height: var(--cell-height);	
 	/*background-size: calc(var(--cell-width)/1) calc(var(--cell-height)/1);*/
 }
+
 
 .missed{
 	background-image: url(missed.gif);
@@ -253,7 +212,7 @@ button{
 
 .sinking{
 /*background-color: red !important;*/
-	transform: rotate(20deg);
+	transform: rotate(10deg);
 	z-index: -1;
 	background-color: #d63031;
 	/*transform: translate(10px, 10px);*/
@@ -278,7 +237,6 @@ button{
 }
 
 
-
 /*
 .status>div>div{
 	width: var(--cell-width);
@@ -293,5 +251,8 @@ button{
 	vertical-align: text-bottom;
 }
 */
+
+
+
 
 

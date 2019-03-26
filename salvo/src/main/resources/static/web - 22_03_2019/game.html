@@ -14,7 +14,7 @@
 
 		<div class="row align-items-start d-flex">
 			<!--LEFT-->
-			<div class="nacho mx-auto col text-center d-flex flex-column align-items-center">
+			<div class="nacho mx-auto col text-center">
 				<div class="nacho mb-3">
 					<h4>My Fleet</h4>
 					<table id="shipLocations" class="nacho semiopacity">
@@ -68,36 +68,26 @@
 					</h5>
 					<h5 v-else="game_view.gamePlayers == 1">OPPONENT: Waiting opponent...</h5>
 				</span>
-				<button class="btn btn-success" type="button" name="goToHome" v-on:click="goToHome()">
-					Exit Game
+				<button class="btn btn-primary" type="button" name="goToHome" v-on:click="goToHome()">
+					Home
 				</button>
 				<button class="btn btn-primary" type="button" name="start_firing" v-if="placingShips" v-on:click="postShips()">Start Firing</button>
-				<button class="btn btn-primary" type="button" name="rotate_ships" v-if="placingShips" v-on:click="rotateShips()">Rotate Ships</button>
-				<button class="btn btn-primary" type="button" name="reposition" v-if="placingShips" v-on:click="reposition()">Reposition</button>
-				<button class="btn btn-danger" v-if="!placingShips && game_view.CurrentGameStatus != 'Waiting for your opponent to fire his/her Salvo'" v-on:click="postSalvo()">Fire!</button>
-				<!--loader x 3-->
-					<div class="loader" v-if="game_view.CurrentGameStatus == 'Waiting for your opponent to fire his/her Salvo'">
-						<div class="spinner-grow spinner-grow-sm text-danger" role="status">
-							<span class="sr-only">Loading...</span>
-						</div>
-						<div class="spinner-grow spinner-grow-sm text-danger" role="status">
-							<span class="sr-only">Loading...</span>
-						</div>
-						<div class="spinner-grow spinner-grow-sm text-danger" role="status">
-							<span class="sr-only">Loading...</span>
-						</div>
-					</div>
-				<span>
-					<h5>State of the Game</h5>
-					<p v-if="game_view.hasOwnProperty('ships')">{{game_view.CurrentGameStatus}}</p>
 
+				<button class="btn btn-danger" v-if="!placingShips" v-on:click="postSalvo()">Fire!</button>
+
+
+				<span>
+					<h6>State of the Game</h6>
+					<p v-if="game_view.hasOwnProperty('ships')">{{game_view.CurrentGameStatus}}</p>
 				</span>
 
 			</div>
 
 			<!--PLACING SHIPS-->
-			<div v-if="placingShips" class="nacho mx-auto col text-center d-flex flex-column align-items-center">
+			<div v-if="placingShips" class="nacho col-sm text-center">
 				<h4>Place your Fleet</h4>
+				<button class="btn btn-primary" type="button" name="rotate_ships" v-on:click="rotateShips()">Rotate Ships</button>
+				<button class="btn btn-primary" type="button" name="reposition" v-on:click="reposition()">Reposition</button>
 				<div id="shipsToBePlaced" class="nacho">
 					<div id="carrier" data-length="5" class="carrierDraggable m-3" draggable="true" v-on:dragstart="dragStart(this.event)">Carrier</div>
 					<div id="battleship" data-length=4 class="battleshipDraggable m-3" draggable="true" v-on:dragstart="dragStart(this.event)">Battleship</div>
@@ -108,7 +98,7 @@
 			</div>
 
 			<!--RIGHT-->
-			<div v-if="!placingShips" class="nacho mx-auto col text-center d-flex flex-column align-items-center">
+			<div v-if="!placingShips" class="nacho mx-auto col text-center">
 				<div class="nacho mb-3">
 					<h4>Opponent's Fleet</h4>
 					<table id="salvoesLocations" class="nacho semiopacity">

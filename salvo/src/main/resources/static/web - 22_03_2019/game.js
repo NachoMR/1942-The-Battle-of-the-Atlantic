@@ -64,14 +64,11 @@ var myVue = new Vue({
 			else{
 				//console.log(game_view);
 				myVue.game_view = game_view;
-				myVue.showShipsOnGrid(game_view.ships);
+				showShipsOnGrid(myVue.game_view.ships);
 				myVue.checkForShips();
 				myVue.getPastSalvoLocations();
 				myVue.showSalvoesOnGrid(myVue.game_view.salvoes);
-				if(game_view.CurrentGameStatus === "Waiting for your opponent to fire his/her Salvo"){
-				checkingForStatusUpdate(game_view.CurrentGameStatus);
-				}
-				//checkingForStatusUpdate(game_view.CurrentGameStatus);
+				startChecking(game_view.CurrentGameStatus);
 				//myVue.getPastSalvoLocations();
 				
 				}
@@ -163,7 +160,6 @@ var myVue = new Vue({
 					if(currentSalvoLocations.length < 5){
 						currentSalvoLocations.push(tdId.slice(5, 8));
 						td.classList.add("salvoes");
-						
 						//console.log(this.currentSalvo.locations);
 					}
 					else{
@@ -259,13 +255,6 @@ var myVue = new Vue({
 				}
 			});
 		},
-		showShipsOnGrid: function(ships) {
-	ships.forEach(ship => ship.locations.forEach(loc => {
-	document.getElementById("ship" + loc).setAttribute("class", ship.type);
-	//document.getElementById("ship" + loc).innerHTML = ship.type.charAt(0).toUpperCase();
-	})
-	);
-		},
 		//rotateShips just below needs REFACTOR to avoid DRY!!
 		rotateShips: function(){
 			if(this.horizontal){
@@ -355,6 +344,14 @@ function renderSalvoesTable(){
 	document.getElementById("salvoesLocations").innerHTML = "<tr><td></td>" + colNumbers.map(col => "<td>" + col + "</td>").join("") + "</tr>" + rowLetters.map(row => "<tr><td>" + row + "</td>" + colNumbers.map(col => "<td id='salvo" + row + col + "'v-on:click='setSalvoLocation(this.event)'>" + "</td>").join("") + "</tr>").join("");
 }
 
+function showShipsOnGrid(ships) {
+	ships.forEach(ship => ship.locations.forEach(loc => {
+	document.getElementById("ship" + loc).setAttribute("class", ship.type);
+	//document.getElementById("ship" + loc).innerHTML = ship.type.charAt(0).toUpperCase();
+	})
+	);
+}
+
 function 	searchGridForClass(targetTable, targetClass){
 	var table = document.getElementById(targetTable);
 	var tr = table.getElementsByTagName("tr");
@@ -373,7 +370,7 @@ function 	searchGridForClass(targetTable, targetClass){
 	return shipArray;
 }
 
-function salvoesUpdate(status){
+function checkForOpponentSalvoes(){
 	fetch('/api/game_view/' + gp, {
 				method: 'GET'
 			})
@@ -382,38 +379,28 @@ function salvoesUpdate(status){
 				return response.json();				
 			})
 			.then(function (game_view2) {
-				if(game_view2.CurrentGameStatus != status){
-					console.log("Your turn.....");
-					//clearInterval(timerId);
-					document.location.href='/web/game.html?gp=' + gp;
-				}
-				else{
-					console.log("Waiting........timerId= " + timerId);
-					checkingForStatusUpdate(status);
-				}
+		startChecking(game_view2.CurrentGameStatus);
+	
+		
 			})
 			.catch(function (error) {
 			  console.log('Request failure: ', error);
 				alert(error);
 				//window.location.href = "games.html";
+
 			});	
 }
-var timerId;
-var delay = 1000;
-function checkingForStatusUpdate(status){
-	timerId = setTimeout(salvoesUpdate, delay, status);
+function startChecking(state){
+	console.log(state);
+		var timerId;
+	if(state == "Waiting for your opponent to fire his/her Salvo"){
+		console.log("waiting.......");
+		this.timerId = setTimeout(checkForOpponentSalvoes, 10000);
+	}
+	else{
+		console.log("Your turn......");
+		clearTimeout(timerId);
+		
+	}
 }
-
-//function checkingForStatusUpdate(state){
-//	console.log(state);
-//		var timerId;
-//	if(state == "Waiting for your opponent to fire his/her Salvo"){
-//		console.log("waiting.......");
-//		this.timerId = setTimeout(salvoesUpdate, 10000);
-//	}
-//	else{
-//		console.log("Your turn......");
-//		clearTimeout(timerId);		
-//	}
-//}
 
