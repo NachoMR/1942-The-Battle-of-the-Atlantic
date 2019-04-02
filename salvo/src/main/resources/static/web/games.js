@@ -68,18 +68,18 @@ var myVue = new Vue({
 					//alert("Leaderboard Data Status" + response.status);
 			})
 			.then(function (leaderboard) {
-				myVue.sortedLeaderboard = leaderboard.sort(function(a,b){
-					/* ###########################
-					Review this code to properly sort the leaderboard table!!
-					########################### */
-					if(b.total_played <= a.total_played){
-						return b.total_points - a.total_points
-					}
-					else{
-						return b.total_points - a.total_points - 1
-					}				
-				});
+					console.log(leaderboard);
+					//myVue.sortedLeaderboard = leaderboard.sort((a,b) => b.total_points - a.total_points);
 					
+					myVue.sortedLeaderboard = leaderboard.sort(function(a,b){
+						if(b.total_points - a.total_points != 0){
+							return b.total_points - a.total_points
+						}else if(b.total_played - a.total_played != 0){
+							return a.total_played - b.total_played
+						}else{
+							return b.won.length - a.won.length
+						}
+					});				
 			}).catch(function (error) {
 				alert(error);
 				//console.log("Error during fetch" + error.message)

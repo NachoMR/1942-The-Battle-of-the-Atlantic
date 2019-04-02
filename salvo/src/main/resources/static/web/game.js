@@ -13,9 +13,13 @@ console.log("window.location es: " + window.location);
 
 var myVue = new Vue({
 	el: "#app",
-	data: {		
+	data: {	
+		currentState: 0,
+		yourCurrentTurn: 0,
+		opponentCurrentTurn: 0,
 		droppedId: "",
 		droppedSize: "",
+		droppable: true,
 		game_view: {},
 		placingShips: false,
 		horizontal: true,
@@ -64,18 +68,22 @@ var myVue = new Vue({
 			else{
 				//console.log(game_view);
 				myVue.game_view = game_view;
+				myVue.getCurrentTurns();
+				myVue.currentState = game_view.CurrentGameState.stateCode;
 				myVue.showShipsOnGrid(game_view.ships);
 				myVue.checkForShips();
 				myVue.getPastSalvoLocations();
 				myVue.showSalvoesOnGrid(myVue.game_view.salvoes);
-				if(game_view.CurrentGameStatus === "Waiting for your opponent to fire his/her Salvo"){
-				checkingForStatusUpdate(game_view.CurrentGameStatus);
+				//see private method checkState at salvoController.java to find out more about stateCode numbers, e.g. {8, "Waiting for your opponent to fire his/her Salvo"}
+				if(	game_view.CurrentGameState.stateCode == 8 ){
+					checkingForStateUpdate(game_view.CurrentGameState.stateCode);
 				}
-				//checkingForStatusUpdate(game_view.CurrentGameStatus);
-				//myVue.getPastSalvoLocations();
-				
-				}
-			})
+//				else if( game_view.CurrentGameState.stateCode == 7 ){
+//					delay = 15000;
+//					checkingForStateUpdate(game_view.CurrentGameState.stateCode);
+//				}			
+			}
+		})
 			.catch(function (error) {
 			  console.log('Request failure: ', error);
 				alert(error);
@@ -260,11 +268,23 @@ var myVue = new Vue({
 			});
 		},
 		showShipsOnGrid: function(ships) {
-	ships.forEach(ship => ship.locations.forEach(loc => {
-	document.getElementById("ship" + loc).setAttribute("class", ship.type);
-	//document.getElementById("ship" + loc).innerHTML = ship.type.charAt(0).toUpperCase();
-	})
-	);
+			ships.forEach(ship => ship.locations.forEach(loc => {
+				document.getElementById("ship" + loc).setAttribute("class", ship.type);
+				//document.getElementById("ship" + loc).innerHTML = ship.type.charAt(0).toUpperCase();
+				})
+			);
+		},		
+		getCurrentTurns: function(){			
+			var player = this.game_view.gamePlayers[0].id;
+			var salvoes = this.game_view.salvoes;
+			if(salvoes.length > 0){
+				this.yourCurrentTurn =  Math.max(...salvoes.filter(salvo => salvo.gamePlayer == player).map(salvo => salvo.turn));						
+				
+				if(this.game_view.gamePlayers.length > 1){
+					var opponent = this.game_view.gamePlayers[1].id;
+					this.opponentCurrentTurn = Math.max(...salvoes.filter(salvo =>	salvo.gamePlayer == opponent).map(salvo => salvo.turn));
+				}
+			}
 		},
 		//rotateShips just below needs REFACTOR to avoid DRY!!
 		rotateShips: function(){
@@ -288,56 +308,124 @@ var myVue = new Vue({
 					this.horizontal = true;
 			}
 		},
-			//drag&drop methods
-		dragStart: function(ev) {
-		
-			console.log("The dragStart 'ev' is: ");
+			//DRAG & DROP METHODS
+		dragStart_handler: function(ev) {	
+			console.log("event DRAGSTART:");
 			console.log(ev);
-			console.log(ev.offsetX);
-			//console.log(ev.offsetY);
+			//console.log("ev.offsetX = " + ev.offsetX);
+			//console.log("ev.clientX = "  + ev.clientX);
+			//console.log("ev.pageX = "  + ev.pageX);
+			//console.log("ev.screenX = "  + ev.screenX);			
   		ev.dataTransfer.setData("text", ev.target.id);
   		ev.dataTransfer.setData("size", ev.target.dataset.length);
-			//setTimeout(() => (ev.target.classList.add("hidden")),0);
-			//console.log("la longitud es: " + ev.target.dataset.length);
-		},
-		dragOver: function(ev) {
-  		ev.preventDefault();
-			ev.target.classList.add("reddish");
-			//console.log(ev.offsetX);
-			//console.log(ev.offsetY);
-		},
-		dragLeave: function(ev){
-			//ev.preventDefault();
-			ev.target.classList.remove("reddish");
-		},
-		drop: function(ev) {
-			console.log("The drop 'ev' is: ");
+			this.shipSize = ev.target.dataset.length;
+		},		
+		dragOver_handler: function(ev) {
+			console.log("event DRAGOVER:");
 			console.log(ev);
-			//console.log(ev.target.id.slice(4,7));
   		ev.preventDefault();
-  		this.droppedId = ev.dataTransfer.getData("text");
-			//console.log("The droppedId is: " + myVue.droppedId);
-  		this.droppedSize = ev.dataTransfer.getData("size");
-			//console.log("The droppedSize is: " + myVue.droppedSize);
-			document.getElementById(this.droppedId).classList.add("hidden");			
-			for(var i = 0 ; i < this.droppedSize ; i++){								
-				if(this.horizontal){
-					var letterId = ev.target.id.slice(4, 5);
-					var numberId = parseInt(ev.target.id.slice(5,7)) + i;					
+			ev.target.classList.add("greenish");
+			
+		},
+		
+		//****************************************
+		allowDrop: function(ev){
+				this.droppable = true;
+			console.log("event ALLOWDROP:");
+			console.log(ev);
+			console.log(ev.target.id);
+			//var draggedArr = [];
+			//console.log(draggedArr);
+			for(i = 0; i < this.shipSize; i++){
+				if(this.horizontal){					
+					if(parseInt(ev.target.id.slice(5,7))+i > 10){
+						console.log("entra en el segundo if");
+						console.log((parseInt(ev.target.id.slice(5,7))+i));
+						this.droppable = false;
+						break;
+					}
+					else if(this.allships.includes(document.getElementById("ship" + ev.target.id.slice(4,5) + (parseInt(ev.target.id.slice(5,7))+i)).classList[0])){
+						console.log("entra en el primer if");
+						this.droppable = false;
+						break;
+					}					
 				}
 				else{
-					var letterIndex = rowLetters.indexOf(ev.target.id.slice(4, 5))
-					var letterId = rowLetters[letterIndex +i];
-					var numberId = parseInt(ev.target.id.slice(5,7));					
+					var letterIndex = rowLetters.indexOf(ev.target.id.slice(4, 5));
+					if(letterIndex + i > 9){
+						this.droppable = false;
+						break;
+					}
+					else if(this.allships.includes(document.getElementById("ship" + (rowLetters[letterIndex + i]) + parseInt(ev.target.id.slice(5,7))).classList[0])){
+						this.droppable = false;
+						break;
+					}
 				}
-				var cellId = document.getElementById("ship" + letterId + numberId);
-					//console.log("letter: " + letterId + " + number: " + numberId);
-					//console.log(cellId);
-					cellId.setAttribute("class", this.droppedId);
-					cellId.removeAttribute("v-on:dragover");
-					cellId.removeAttribute("v-on:drop");
+				
 			}
-			},
+//			console.log("draggedArr: " + draggedArr);
+//			console.log("Func",draggedArr.some(this.isInvalidDropArea));
+//			
+//			if( draggedArr.some(this.isInvalidDropArea) ){
+//				this.droppable = false;
+//				console.log("false");
+//			}
+//			else{
+//				this.droppable = true;
+//				console.log("true");
+//			}
+		},
+		//****************************************
+		
+		isInvalidDropArea: function(loc){
+			console.log("loc= " , loc);
+			console.log("ship" , loc);
+			console.log("SHIP CLASS" , document.getElementById("ship" + loc).classList);
+			return document.getElementById("ship" + loc).classList.length > 1;
+			//return false;	
+			
+			
+		},
+		dragLeave_handler: function(ev){
+			console.log("event DRAGLEAVE:");
+			console.log(ev);
+			ev.target.classList.remove("greenish");
+		},
+		drop_handler: function(ev) {
+			if(this.droppable == true){
+				console.log("event DROP:" );
+				console.log(ev);
+				//console.log(ev.target.id.slice(4,7));
+				ev.preventDefault();
+				this.droppedId = ev.dataTransfer.getData("text");
+				//console.log("The droppedId is: " + myVue.droppedId);
+				this.droppedSize = ev.dataTransfer.getData("size");
+				//console.log("The droppedSize is: " + myVue.droppedSize);
+				document.getElementById(this.droppedId).classList.add("hidden");			
+				for(var i = 0 ; i < this.droppedSize ; i++){								
+					if(this.horizontal){
+						var letterId = ev.target.id.slice(4, 5);
+						var numberId = parseInt(ev.target.id.slice(5,7)) + i;					
+					}
+					else{
+						var letterIndex = rowLetters.indexOf(ev.target.id.slice(4, 5))
+						var letterId = rowLetters[letterIndex +i];
+						var numberId = parseInt(ev.target.id.slice(5,7));					
+					}
+					var cellId = document.getElementById("ship" + letterId + numberId);
+						//console.log("letter: " + letterId + " + number: " + numberId);
+						//console.log(cellId);
+						cellId.setAttribute("class", this.droppedId);
+						//cellId.removeAttribute("v-on:dragover");
+						//cellId.removeAttribute("v-on:drop");
+				}
+			}
+			else{
+				ev.target.classList.remove("greenish");
+				alert("position not permitted");
+			}			
+		}
+		
 	},
 	created: function(){
 		this.getGameView();
@@ -348,7 +436,7 @@ var myVue = new Vue({
 // ====================== FUNCTIONS ======================
 
 function renderShipsTable(){
-	document.getElementById("shipLocations").innerHTML = "<tr><td></td>" + colNumbers.map(col => "<td>" + col + "</td>").join("") + "</tr>" + rowLetters.map(row => "<tr><td>" + row + "</td>" + colNumbers.map(col => "<td id='ship" + row + col + "' v-on:dragover='dragOver(this.event)' v-on:drop='drop(this.event)' v-on:dragleave='dragLeave(this.event)'>" + "</td>").join("") + "</tr>").join("");
+	document.getElementById("shipLocations").innerHTML = "<tr><td></td>" + colNumbers.map(col => "<td>" + col + "</td>").join("") + "</tr>" + rowLetters.map(row => "<tr><td>" + row + "</td>" + colNumbers.map(col => "<td id='ship" + row + col + "' v-on:dragover='dragOver_handler(this.event); allowDrop(this.event)' v-on:drop='drop_handler(this.event)' v-on:dragleave='dragLeave_handler(this.event)'>" + "</td>").join("") + "</tr>").join("");
 }
 
 function renderSalvoesTable(){
@@ -373,7 +461,8 @@ function 	searchGridForClass(targetTable, targetClass){
 	return shipArray;
 }
 
-function salvoesUpdate(status){
+//Below we have two functions to check changes on the opponents salvoes every given interval (5s)
+function salvoesUpdate(stateCode){
 	fetch('/api/game_view/' + gp, {
 				method: 'GET'
 			})
@@ -381,15 +470,15 @@ function salvoesUpdate(status){
 			//console.log("Your Game Info Status: " + response.status);
 				return response.json();				
 			})
-			.then(function (game_view2) {
-				if(game_view2.CurrentGameStatus != status){
+			.then(function (game_view2) {					
+				if(game_view2.CurrentGameState.stateCode != stateCode){
 					console.log("Your turn.....");
 					//clearInterval(timerId);
 					document.location.href='/web/game.html?gp=' + gp;
 				}
 				else{
 					console.log("Waiting........timerId= " + timerId);
-					checkingForStatusUpdate(status);
+					checkingForStateUpdate(stateCode);
 				}
 			})
 			.catch(function (error) {
@@ -399,12 +488,17 @@ function salvoesUpdate(status){
 			});	
 }
 var timerId;
-var delay = 1000;
-function checkingForStatusUpdate(status){
-	timerId = setTimeout(salvoesUpdate, delay, status);
+var delay = 5000;
+function checkingForStateUpdate(stateCode){
+	timerId = setTimeout(salvoesUpdate, delay, stateCode);
 }
 
-//function checkingForStatusUpdate(state){
+
+
+
+
+
+//function checkingForStateUpdate(state){
 //	console.log(state);
 //		var timerId;
 //	if(state == "Waiting for your opponent to fire his/her Salvo"){
