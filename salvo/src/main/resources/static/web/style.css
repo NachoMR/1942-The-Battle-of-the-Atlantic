@@ -7,14 +7,15 @@
 
 /* ##### My VARIABLES and BREAKPOINTS ##### */
 :root{	
---carrier-color: #6a89cc;
-	--battleship-color: #a29bfe;
-	--submarine-color: #82ccdd;
-	--destroyer-color: #3c6382;
-	--patrol_boat-color: #079992;
-	--placed-ship-coler: #b2bec3;
+	--carrier-color: rgb(156, 39, 176);
+	--battleship-color: rgb(0, 150, 136);
+	--submarine-color: rgb(63, 81, 181);
+	--destroyer-color: rgb(255, 87, 34);
+	--patrol_boat-color: rgb(255, 152, 0);
+	--placed-ship-color: #b2bec3;
 	--cell-width: 20px;
   --cell-height: 20px;
+	--rotation: 10deg;
 }
 
 @media screen and (min-width: 1100px) {
@@ -41,12 +42,21 @@
 h4{
 	font-size: 1.607vw;
 }
+
 h5{
 	font-size: 1.339vw;
 }
+
 h6, p, td, div{
 	font-size: 1.071vw;
 }
+
+h6{
+	background-color: rgba(220,216,172,0.5);
+	border-radius: 10px;
+	padding: 2px;
+}
+
 .btn{
 	font-size: 0.9vw;
 }
@@ -54,11 +64,11 @@ h6, p, td, div{
 /* #################### */
 
 .nacho{
-	border: 1px dashed yellow;
+	border: 2px dashed black;
 }
 
 body{
-	margin: var(--cell-width);
+	margin: calc(var(--cell-width)*0.5);
 	background-image: url(warships.jpg);
 	background-repeat: no-repeat;
 	background-size: cover;
@@ -252,16 +262,16 @@ button{
 /* ########## SHIP STATUS ########## */
 
 .sinking{
-/*background-color: red !important;*/
-	transform: rotate(20deg);
+	transform: rotate(var(--rotation));
 	z-index: -1;
 	background-color: #d63031;
-	/*transform: translate(10px, 10px);*/
 }
 
 .strikethrough{
 	text-decoration: line-through;
 	z-index: 1;
+	transform: rotate(var(--rotation));
+
 }
 
 .status>div{
@@ -277,7 +287,13 @@ button{
 	background-color: red;
 }
 
+.greenish{
+	background-color: green;
+}
 
+.yellow{
+	background-color: yellow;
+}
 
 /*
 .status>div>div{

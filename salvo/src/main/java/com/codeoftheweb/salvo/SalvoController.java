@@ -223,7 +223,7 @@ public class SalvoController {
                     } else {
                         info.put("salvoes", EMPTY_ARRAY);
                     }
-                    info.put("CurrentGameStatus", checkState(gamePlayerId));
+                    info.put("CurrentGameState", checkState(gamePlayerId));
                     return info;
                 } else {
                     return new ResponseEntity<>(makeMap("error", "You're very smart but cheating is not permitted"), HttpStatus.UNAUTHORIZED);
@@ -489,20 +489,82 @@ public class SalvoController {
 //        return result;
 //    }
 
-    private String checkState(Long gamePlayerId){
+
+
+
+//    private String checkState(Long gamePlayerId){
+//        GamePlayer currentGamePlayer = gamePlayerRepo.findById(gamePlayerId).orElse(null);
+//        String info;
+//        //add code for OWN SHIPS (Plesase drag your fleet...)
+//        if(currentGamePlayer.getShips().isEmpty()){
+//            info = ("Please drag your Ships on the right onto your Grid on the left and click on \"Start Firing\"");
+//        }
+//        //add code for OPPONENT (Waiting for Opponent to join...)
+//        else if(getOpponentGp(currentGamePlayer).orElse(null) == null){
+//            info = ("Waiting for opponent to Join the Game");
+//        }
+//        //add code for OPPONENT'S SHIP (Waiting for Opponent to place Ships...)
+//        else if(getOpponentGp(currentGamePlayer).orElse(null).getShips().isEmpty()){
+//            info = ("Waiting for your opponent to place his/her Ships");
+//        }
+//        //add code for Game Over (The Game is Over...)
+//        else if(isGameOver(currentGamePlayer)){
+//            //add code to setup Scores accordingly...  Score sc10 = new Score(1.0, g9, p4);
+//            Game currentGame = currentGamePlayer.getGame();
+//            Player currentPlayer = currentGamePlayer.getPlayer();
+//            Player opponentPlayer = getOpponentGp(currentGamePlayer).orElse(null).getPlayer();
+//            Score score1;
+//            Score score2;
+//            if(lostShipsDTO(currentGamePlayer).size() == 5 && lostShipsDTO(getOpponentGp(currentGamePlayer).orElse(null)).size() == 5){
+//                score1 = new Score(0.5, currentGame, currentPlayer);
+//                score2 = new Score(0.5, currentGame, opponentPlayer);
+//                info = ("The Game is Over. It's been a tie!");
+//            }
+//            else if(lostShipsDTO(currentGamePlayer).size() < lostShipsDTO(getOpponentGp(currentGamePlayer).orElse(null)).size()){
+//                score1 = new Score(1.0, currentGame, currentPlayer);
+//                score2 = new Score(0.0, currentGame, opponentPlayer);
+//                info = ("The Game is Over. The winner is: " + currentPlayer.getFirstName() + " " + currentPlayer.getLastName());
+//            }else{
+//                score1 = new Score(0.0, currentGame, currentPlayer);
+//                score2 = new Score(1.0, currentGame, opponentPlayer);
+//                info = ("The Game is Over. The winner is: " + opponentPlayer.getFirstName() + " " + opponentPlayer.getLastName());
+//
+//            }
+//            scoreRepo.save(score1);
+//            scoreRepo.save(score2);
+//        }
+//         //add code for different Turn cases
+//        else if(currentGamePlayer.getSalvoes().size() <= getOpponentGp(currentGamePlayer).orElse(null).getSalvoes().size()){
+//            info = ("Fire your Salvo. Choose 5 locations on your Opponent's Grid and hit Fire! (click again to reposition)");
+//        }
+//        else if(currentGamePlayer.getSalvoes().size() > getOpponentGp(currentGamePlayer).orElse(null).getSalvoes().size()){
+//            info = ("Waiting for your opponent to fire his/her Salvo");
+//        }
+//        else {
+//            info = ("Your turn, continue playing");
+//        }
+//        return info;
+//    }
+
+
+
+    private Map<String, Object> checkState(Long gamePlayerId){
         GamePlayer currentGamePlayer = gamePlayerRepo.findById(gamePlayerId).orElse(null);
-        String info;
+        Map<String, Object> info = new LinkedHashMap<>();
         //add code for OWN SHIPS (Plesase drag your fleet...)
         if(currentGamePlayer.getShips().isEmpty()){
-            info = ("Please drag your Ships on the right onto your Grid on the left and click on \"Start Firing\"");
+            info.put("stateCode", 1);
+            info.put("stateAction", "Please drag your Ships on the right onto your Grid on the left and click on \"Start Firing\"");
         }
         //add code for OPPONENT (Waiting for Opponent to join...)
         else if(getOpponentGp(currentGamePlayer).orElse(null) == null){
-            info = ("Waiting for opponent to Join the Game");
+            info.put("stateCode", 2);
+            info.put("stateAction", "Waiting for opponent to Join the Game");
         }
         //add code for OPPONENT'S SHIP (Waiting for Opponent to place Ships...)
         else if(getOpponentGp(currentGamePlayer).orElse(null).getShips().isEmpty()){
-            info = ("Waiting for your opponent to place his/her Ships");
+            info.put("stateCode", 3);
+            info.put("stateAction", "Waiting for your opponent to place his/her Ships");
         }
         //add code for Game Over (The Game is Over...)
         else if(isGameOver(currentGamePlayer)){
@@ -515,30 +577,36 @@ public class SalvoController {
             if(lostShipsDTO(currentGamePlayer).size() == 5 && lostShipsDTO(getOpponentGp(currentGamePlayer).orElse(null)).size() == 5){
                 score1 = new Score(0.5, currentGame, currentPlayer);
                 score2 = new Score(0.5, currentGame, opponentPlayer);
-                info = ("The Game is Over. It's been a tie!");
+                info.put("stateCode", 4);
+                info.put("stateAction", "The Game is Over. It's been a tie!");
             }
             else if(lostShipsDTO(currentGamePlayer).size() < lostShipsDTO(getOpponentGp(currentGamePlayer).orElse(null)).size()){
                 score1 = new Score(1.0, currentGame, currentPlayer);
                 score2 = new Score(0.0, currentGame, opponentPlayer);
-                info = ("The Game is Over. The winner is: " + currentPlayer.getFirstName() + " " + currentPlayer.getLastName());
+                info.put("stateCode", 5);
+                info.put("stateAction", "The Game is Over. The winner is: " + currentPlayer.getFirstName() + " " + currentPlayer.getLastName());
             }else{
                 score1 = new Score(0.0, currentGame, currentPlayer);
                 score2 = new Score(1.0, currentGame, opponentPlayer);
-                info = ("The Game is Over. The winner is: " + opponentPlayer.getFirstName() + " " + opponentPlayer.getLastName());
+                info.put("stateCode", 6);
+                info.put("stateAction", "The Game is Over. The winner is: " + opponentPlayer.getFirstName() + " " + opponentPlayer.getLastName());
 
             }
             scoreRepo.save(score1);
             scoreRepo.save(score2);
         }
-         //add code for different Turn cases
+        //add code for different Turn cases
         else if(currentGamePlayer.getSalvoes().size() <= getOpponentGp(currentGamePlayer).orElse(null).getSalvoes().size()){
-            info = ("Fire your Salvo. Choose 5 locations on your Opponent's Grid and hit Fire! (click again to reposition)");
+            info.put("stateCode", 7);
+            info.put("stateAction", "Fire your Salvo. Choose 5 locations on your Opponent's Grid and hit Fire! (click again to reposition)");
         }
         else if(currentGamePlayer.getSalvoes().size() > getOpponentGp(currentGamePlayer).orElse(null).getSalvoes().size()){
-            info = ("Waiting for your opponent to fire his/her Salvo");
+            info.put("stateCode", 8);
+            info.put("stateAction", "Waiting for your opponent to fire his/her Salvo");
         }
         else {
-            info = ("Your turn, continue playing");
+            info.put("stateCode", 9);
+            info.put("stateAction", "Your turn, continue playing");
         }
         return info;
     }

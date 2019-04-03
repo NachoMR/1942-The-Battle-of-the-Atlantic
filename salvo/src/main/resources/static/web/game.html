@@ -58,11 +58,11 @@
 			</div>
 
 			<!--CENTER-->
-			<div class="nacho col-sm-3 notifications align-self-start d-flex flex-column align-items-center">
-				<span v-if="game_view.hasOwnProperty('gamePlayers')">
+			<div class="nacho col-sm-3 notifications align-self-start d-flex flex-column align-items-center" v-if="game_view.hasOwnProperty('gamePlayers')">
+				<span>
 					<h5>GAME: (g={{game_view.id}})
 					</h5>
-					<h5>PLAYER: {{game_view.gamePlayers[0].player.email.split("@")[0]}} (gp={{game_view.gamePlayers[0].id}}))
+					<h5>YOU: {{game_view.gamePlayers[0].player.email.split("@")[0]}} (gp={{game_view.gamePlayers[0].id}}))
 					</h5>
 					<h5 v-if="game_view.gamePlayers.length == 2">OPPONENT: {{game_view.gamePlayers[1].player.email.split("@")[0]}} (gp={{game_view.gamePlayers[1].id}})
 					</h5>
@@ -74,23 +74,26 @@
 				<button class="btn btn-primary" type="button" name="start_firing" v-if="placingShips" v-on:click="postShips()">Start Firing</button>
 				<button class="btn btn-primary" type="button" name="rotate_ships" v-if="placingShips" v-on:click="rotateShips()">Rotate Ships</button>
 				<button class="btn btn-primary" type="button" name="reposition" v-if="placingShips" v-on:click="reposition()">Reposition</button>
-				<button class="btn btn-danger" v-if="!placingShips && game_view.CurrentGameStatus != 'Waiting for your opponent to fire his/her Salvo'" v-on:click="postSalvo()">Fire!</button>
+				<button class="btn btn-danger" v-if="!placingShips && currentState != 8 && currentState != 4 && currentState != 5 && currentState != 6" v-on:click="postSalvo()">Fire!</button>
 				<!--loader x 3-->
-					<div class="loader" v-if="game_view.CurrentGameStatus == 'Waiting for your opponent to fire his/her Salvo'">
-						<div class="spinner-grow spinner-grow-sm text-danger" role="status">
-							<span class="sr-only">Loading...</span>
-						</div>
-						<div class="spinner-grow spinner-grow-sm text-danger" role="status">
-							<span class="sr-only">Loading...</span>
-						</div>
-						<div class="spinner-grow spinner-grow-sm text-danger" role="status">
-							<span class="sr-only">Loading...</span>
-						</div>
+				<div class="loader" v-if="game_view.CurrentGameState.stateCode == 8">
+					<div class="spinner-grow spinner-grow-sm text-danger" role="status">
+						<span class="sr-only">Loading...</span>
 					</div>
+					<div class="spinner-grow spinner-grow-sm text-danger" role="status">
+						<span class="sr-only">Loading...</span>
+					</div>
+					<div class="spinner-grow spinner-grow-sm text-danger" role="status">
+						<span class="sr-only">Loading...</span>
+					</div>
+				</div>
 				<span>
 					<h5>State of the Game</h5>
-					<p v-if="game_view.hasOwnProperty('ships')">{{game_view.CurrentGameStatus}}</p>
-
+					<div class="d-flex justify-content-between">
+						<h5>Turn:{{yourCurrentTurn}}</h5>
+						<h5>Turn:{{opponentCurrentTurn}}</h5>
+					</div>
+					<p>{{game_view.CurrentGameState.stateAction}}</p>
 				</span>
 
 			</div>
@@ -99,11 +102,11 @@
 			<div v-if="placingShips" class="nacho mx-auto col text-center d-flex flex-column align-items-center">
 				<h4>Place your Fleet</h4>
 				<div id="shipsToBePlaced" class="nacho">
-					<div id="carrier" data-length="5" class="carrierDraggable m-3" draggable="true" v-on:dragstart="dragStart(this.event)">Carrier</div>
-					<div id="battleship" data-length=4 class="battleshipDraggable m-3" draggable="true" v-on:dragstart="dragStart(this.event)">Battleship</div>
-					<div id="submarine" data-length=3 class="submarineDraggable m-3" draggable="true" v-on:dragstart="dragStart(this.event)">Submarine</div>
-					<div id="destroyer" data-length=3 class="destroyerDraggable m-3" draggable="true" v-on:dragstart="dragStart(this.event)">Destroyer</div>
-					<div id="patrol_boat" data-length=2 class="patrol_boatDraggable m-3" draggable="true" v-on:dragstart="dragStart(this.event)">Patrol B.</div>
+					<div id="carrier" data-length=5 class="carrierDraggable m-3" draggable="true" v-on:dragstart="dragStart_handler(this.event)">Carrier</div>
+					<div id="battleship" data-length=4 class="battleshipDraggable m-3" draggable="true" v-on:dragstart="dragStart_handler(this.event)">Battleship</div>
+					<div id="submarine" data-length=3 class="submarineDraggable m-3" draggable="true" v-on:dragstart="dragStart_handler(this.event)">Submarine</div>
+					<div id="destroyer" data-length=3 class="destroyerDraggable m-3" draggable="true" v-on:dragstart="dragStart_handler(this.event)">Destroyer</div>
+					<div id="patrol_boat" data-length=2 class="patrol_boatDraggable m-3" draggable="true" v-on:dragstart="dragStart_handler(this.event)">Patrol B.</div>
 				</div>
 			</div>
 
