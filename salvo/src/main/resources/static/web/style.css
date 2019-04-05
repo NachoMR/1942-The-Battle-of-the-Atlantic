@@ -37,6 +37,13 @@
 	}
 }
 
+/* ########## IMPORTING FONTS ########## */
+
+@font-face{
+	font-family: gunplay;
+	src: url(gunplay.ttf);
+}
+
 /* ########## RESPONSIVE TEXT ########## */
 
 h4{
@@ -63,7 +70,11 @@ h6{
 
 /* #################### */
 
-.nacho{
+h6, h5, h4, h3, h2, p, label, input, button, th, td{
+	font-family: gunplay;
+}
+
+.nnnnacho{
 	border: 2px dashed black;
 }
 

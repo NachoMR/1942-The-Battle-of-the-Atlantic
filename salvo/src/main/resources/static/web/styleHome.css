@@ -1,6 +1,42 @@
 /*   Style for the Home Page   */
 
 body{
-	background-color: bisque;
+	background-image: url(warships4.jpg);
+	background-repeat:  no-repeat;
+	background-size: cover;
+	background-attachment: fixed;	
 }
 
+#logIn, #signUp, #logOut, #listOfGames, #leaderboard{
+/*	background-color: rgba(74,105,189,0.5);*/
+	background-color: rgba(254,254,254,0.5);
+	border-radius: 10px;
+	margin-bottom: 15px;
+}
+
+th{
+	font-size: 1.2em;
+}
+
+/* ########## IMPORTING FONTS ########## */
+@font-face{
+	font-family: dirtywar;
+	src: url(dirtywar.otf);
+}
+@font-face{
+	font-family: gunplay;
+	src: url(gunplay.ttf);
+}
+
+h1{
+	font-family: dirtywar;
+	font-size: 5em;
+/*
+	letter-spacing: 0.2em;
+	word-spacing: 0.2em;
+*/
+}
+
+h6, h5, h4, h3, h2, p, label, input, button, th, td{
+	font-family: gunplay;
+}
