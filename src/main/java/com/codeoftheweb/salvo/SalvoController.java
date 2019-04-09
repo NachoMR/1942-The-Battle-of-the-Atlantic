@@ -257,10 +257,10 @@ public class SalvoController {
     public Map<String, Object> playerInfoDTO(Player player){
         Map<String, Object> info = new LinkedHashMap<>();
         info.put("name", player.getUserName());
-        info.put("won", player.getScores().stream().filter(b -> b.getPoints() == 1.0).map(b -> b.getPoints()).collect(toList()));
-        info.put("lost", player.getScores().stream().filter(b -> b.getPoints() == 0.0).map(b -> b.getPoints()).collect(toList()));
-        info.put("tied", player.getScores().stream().filter(b -> b.getPoints() == 0.5).map(b -> b.getPoints()).collect(toList()));
-        info.put("total_points", player.getScores().stream().filter(b -> b.getPoints() == 1.0).count() + 0.5 * player.getScores().stream().filter(b -> b.getPoints() == 0.5).count());
+        info.put("won", player.getScores().stream().filter(score -> score.getPoints() == 1.0).map(score -> score.getPoints()).collect(toList()));
+        info.put("lost", player.getScores().stream().filter(score -> score.getPoints() == 0.0).map(score -> score.getPoints()).collect(toList()));
+        info.put("tied", player.getScores().stream().filter(score -> score.getPoints() == 0.5).map(score -> score.getPoints()).collect(toList()));
+        info.put("total_points", player.getScores().stream().filter(score -> score.getPoints() == 1.0).count() + 0.5 * player.getScores().stream().filter(score -> score.getPoints() == 0.5).count());
         info.put("total_played", player.getScores().size());
         return info;
     }
@@ -306,7 +306,7 @@ public class SalvoController {
         Map<String, Object> info = new LinkedHashMap<>();
         //info.put("gp_id", gamePlayer.getId());
         //info.put("p_id", gamePlayer.getPlayer().getUserName());
-        info.put("score", gamePlayer.getScore());
+        info.put("score", gamePlayer.getPlayer().getScore(gamePlayer.getGame())  );
         return info;
     }
     public List<Object> gamePlayersDTO(GamePlayer currentGp){
@@ -490,64 +490,6 @@ public class SalvoController {
 //    }
 
 
-
-
-//    private String checkState(Long gamePlayerId){
-//        GamePlayer currentGamePlayer = gamePlayerRepo.findById(gamePlayerId).orElse(null);
-//        String info;
-//        //add code for OWN SHIPS (Plesase drag your fleet...)
-//        if(currentGamePlayer.getShips().isEmpty()){
-//            info = ("Please drag your Ships on the right onto your Grid on the left and click on \"Start Firing\"");
-//        }
-//        //add code for OPPONENT (Waiting for Opponent to join...)
-//        else if(getOpponentGp(currentGamePlayer).orElse(null) == null){
-//            info = ("Waiting for opponent to Join the Game");
-//        }
-//        //add code for OPPONENT'S SHIP (Waiting for Opponent to place Ships...)
-//        else if(getOpponentGp(currentGamePlayer).orElse(null).getShips().isEmpty()){
-//            info = ("Waiting for your opponent to place his/her Ships");
-//        }
-//        //add code for Game Over (The Game is Over...)
-//        else if(isGameOver(currentGamePlayer)){
-//            //add code to setup Scores accordingly...  Score sc10 = new Score(1.0, g9, p4);
-//            Game currentGame = currentGamePlayer.getGame();
-//            Player currentPlayer = currentGamePlayer.getPlayer();
-//            Player opponentPlayer = getOpponentGp(currentGamePlayer).orElse(null).getPlayer();
-//            Score score1;
-//            Score score2;
-//            if(lostShipsDTO(currentGamePlayer).size() == 5 && lostShipsDTO(getOpponentGp(currentGamePlayer).orElse(null)).size() == 5){
-//                score1 = new Score(0.5, currentGame, currentPlayer);
-//                score2 = new Score(0.5, currentGame, opponentPlayer);
-//                info = ("The Game is Over. It's been a tie!");
-//            }
-//            else if(lostShipsDTO(currentGamePlayer).size() < lostShipsDTO(getOpponentGp(currentGamePlayer).orElse(null)).size()){
-//                score1 = new Score(1.0, currentGame, currentPlayer);
-//                score2 = new Score(0.0, currentGame, opponentPlayer);
-//                info = ("The Game is Over. The winner is: " + currentPlayer.getFirstName() + " " + currentPlayer.getLastName());
-//            }else{
-//                score1 = new Score(0.0, currentGame, currentPlayer);
-//                score2 = new Score(1.0, currentGame, opponentPlayer);
-//                info = ("The Game is Over. The winner is: " + opponentPlayer.getFirstName() + " " + opponentPlayer.getLastName());
-//
-//            }
-//            scoreRepo.save(score1);
-//            scoreRepo.save(score2);
-//        }
-//         //add code for different Turn cases
-//        else if(currentGamePlayer.getSalvoes().size() <= getOpponentGp(currentGamePlayer).orElse(null).getSalvoes().size()){
-//            info = ("Fire your Salvo. Choose 5 locations on your Opponent's Grid and hit Fire! (click again to reposition)");
-//        }
-//        else if(currentGamePlayer.getSalvoes().size() > getOpponentGp(currentGamePlayer).orElse(null).getSalvoes().size()){
-//            info = ("Waiting for your opponent to fire his/her Salvo");
-//        }
-//        else {
-//            info = ("Your turn, continue playing");
-//        }
-//        return info;
-//    }
-
-
-
     private Map<String, Object> checkState(Long gamePlayerId){
         GamePlayer currentGamePlayer = gamePlayerRepo.findById(gamePlayerId).orElse(null);
         Map<String, Object> info = new LinkedHashMap<>();
@@ -592,8 +534,12 @@ public class SalvoController {
                 info.put("stateAction", "The Game is Over. The winner is: " + opponentPlayer.getFirstName() + " " + opponentPlayer.getLastName());
 
             }
-            scoreRepo.save(score1);
-            scoreRepo.save(score2);
+            if(  currentGamePlayer.getPlayer().getScore(currentGamePlayer.getGame()) == null ) {
+                currentGamePlayer.getPlayer().addScore(score1);
+                opponentPlayer.addScore(score2);
+                scoreRepo.save(score1);
+                scoreRepo.save(score2);
+            }
         }
         //add code for different Turn cases
         else if(currentGamePlayer.getSalvoes().size() <= getOpponentGp(currentGamePlayer).orElse(null).getSalvoes().size()){

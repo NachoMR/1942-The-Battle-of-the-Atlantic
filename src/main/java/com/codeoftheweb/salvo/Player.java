@@ -115,8 +115,8 @@ public class Player {
         scores.add(score);
     }
 
-    public Optional<Score> getScore(Game game){
-        Optional<Score> playerScore = this.scores.stream().filter(p -> p.getGame().equals(game)).findFirst();
+    public Score getScore(Game game){
+        Score playerScore = this.scores.stream().filter(score -> score.getGame().equals(game)).findFirst().orElse(null);
         return playerScore;
     }
 

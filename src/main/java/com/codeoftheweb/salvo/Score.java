@@ -30,7 +30,7 @@ public class Score {
         this.game = game;
         this.player = player;
         game.addScore(this);
-        player.addScore(this);
+        //player.addScore(this);
     }
     //METHODS
 

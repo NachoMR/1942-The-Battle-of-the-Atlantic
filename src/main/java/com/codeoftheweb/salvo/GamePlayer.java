@@ -98,8 +98,8 @@ public class GamePlayer {
         salvoes.add(salvo);
     }
 
-    public Optional<Score> getScore(){
-        return this.player.getScore(this.game);
-    }
+//    public Score getScore(){
+//        return this.getPlayer().getScore()
+//    }
 
 }

@@ -232,13 +232,21 @@ public class SalvoApplication extends SpringBootServletInitializer {
 
 
 			Score sc1 = new Score(1.0, g1, p1);
+			p1.addScore(sc1);
 			Score sc2 = new Score(0.0, g1, p2);
+			p2.addScore(sc2);
 			Score sc3 = new Score(0.5, g2, p1);
+			p1.addScore(sc3);
 			Score sc4 = new Score(0.5, g2, p2);
+			p2.addScore(sc4);
 			Score sc5 = new Score(1.0, g3, p2);
+			p2.addScore(sc5);
 			Score sc6 = new Score(0.0, g3, p4);
+			p4.addScore(sc6);
 			Score sc7 = new Score(0.5, g4, p2);
+			p2.addScore(sc7);
 			Score sc8 = new Score(0.5, g4, p1);
+			p1.addScore(sc8);
 //			Score sc9 = new Score(0.0, g9, p2);
 //			Score sc10 = new Score(1.0, g9, p4);
 
