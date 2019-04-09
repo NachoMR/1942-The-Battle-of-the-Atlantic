@@ -175,7 +175,7 @@
 					<tbody>
 						<tr v-for="game in gamesJson.games">
 							<td>{{game.id}}</td>
-							<td v-for="gameplayer in game.gameplayers">{{gameplayer.player.email.split("@")[0]}}</td>
+							<td v-for="gameplayer in game.gameplayers">{{gameplayer.player.email.split("@")[0] + " (gp=" + gameplayer.id + ")"}}</td>
 							<td v-if="game.gameplayers.length == 1">Waiting...</td>
 							<td><span>{{gameOutcome(game)}}</span></td>
 

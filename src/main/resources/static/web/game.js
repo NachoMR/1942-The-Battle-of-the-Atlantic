@@ -488,7 +488,7 @@ function salvoesUpdate(stateCode){
 			});	
 }
 var timerId;
-var delay = 5000;
+var delay = 3000;
 function checkingForStateUpdate(stateCode){
 	timerId = setTimeout(salvoesUpdate, delay, stateCode);
 }

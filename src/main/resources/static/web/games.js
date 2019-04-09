@@ -19,10 +19,10 @@ var myVue = new Vue({
 				return "Not finished"
 			}
 			else if(game.scores[0].score.points == 1){
-				return "Player-1"
+				return game.gameplayers[0].player.email.split("@")[0]
 			}
 			else if(game.scores[1].score.points == 1){
-				return "Player-2"
+				return game.gameplayers[1].player.email.split("@")[0]
 			}			
 			else{
 				return "Tied"

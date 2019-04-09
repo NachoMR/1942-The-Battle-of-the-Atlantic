@@ -62,9 +62,9 @@
 				<span>
 					<h5>GAME: (g={{game_view.id}})
 					</h5>
-					<h5>YOU: {{game_view.gamePlayers[0].player.email.split("@")[0]}} (gp={{game_view.gamePlayers[0].id}}))
+					<h5>&#129144 YOU: {{game_view.gamePlayers[0].player.email.split("@")[0]}} (gp={{game_view.gamePlayers[0].id}}))
 					</h5>
-					<h5 v-if="game_view.gamePlayers.length == 2">OPPONENT: {{game_view.gamePlayers[1].player.email.split("@")[0]}} (gp={{game_view.gamePlayers[1].id}})
+					<h5 v-if="game_view.gamePlayers.length == 2">OPPONENT: {{game_view.gamePlayers[1].player.email.split("@")[0]}} (gp={{game_view.gamePlayers[1].id}}) &#129146
 					</h5>
 					<h5 v-else="game_view.gamePlayers == 1">OPPONENT: Waiting opponent...</h5>
 				</span>
@@ -90,8 +90,8 @@
 				<span>
 					<h5>State of the Game</h5>
 					<div class="d-flex justify-content-between">
-						<h5>Turn:{{yourCurrentTurn}}</h5>
-						<h5>Turn:{{opponentCurrentTurn}}</h5>
+						<h5>&#129144 Turn:{{yourCurrentTurn}}</h5>
+						<h5>Turn:{{opponentCurrentTurn}} &#129146</h5>
 					</div>
 					<p>{{game_view.CurrentGameState.stateAction}}</p>
 				</span>
