@@ -255,7 +255,8 @@ button{
 	background-size: contain;
 	background-position: center;
 	width: var(--cell-width);
-	height: var(--cell-height);	
+	height: var(--cell-height);
+	background-color: yellowgreen;
 	/*background-size: calc(var(--cell-width)/1) calc(var(--cell-height)/1);*/
 }
 

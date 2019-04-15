@@ -6,7 +6,6 @@ renderSalvoesTable();
 
 //getting the active/current gameplayer id from the "query string" at the end of the URL http://localhost:8080/web/game.html?gp=3
 var gp = window.location.search.split("=")[1]
-console.log("Vamos a hacer Fetch sobre: http://localhost:8080/api/game_view/" + gp);
 console.log("window.location es: " + window.location);
 
 //================ VUE VAR DECLARATION ===================
@@ -31,7 +30,8 @@ var myVue = new Vue({
 									{type: "patrol_boat", locations: []}
 									],
 		currentSalvo: {turn: "", locations: []},
-		pastSalvoLocations: []
+		pastSalvoLocations: [],
+		modalAlertContent: ""
 		},
 	methods: {
 		checkForShips: function(){
@@ -54,19 +54,18 @@ var myVue = new Vue({
 				method: 'GET'
 			})
 			.then(function (response) {
-				//if (!response.ok) {
-        //throw new Error("HTTP error, status = " + response.status);
-      	//}
-			console.log("Your Game Info Status: " + response.status);
+				console.log(response);
 				return response.json();				
 			})
 			.then(function (game_view) {
 				if(game_view.error){
-					alert(game_view.error);
-					window.location.href = "games.html";
+					myVue.showModalAlert(game_view.error);
+					$("#exampleModal").on("hide.bs.modal", function(){
+						window.location.href = "games.html";
+					})
+					//window.location.href = "games.html";
 				}
 			else{
-				//console.log(game_view);
 				myVue.game_view = game_view;
 				myVue.getCurrentTurns();
 				myVue.currentState = game_view.CurrentGameState.stateCode;
@@ -77,18 +76,15 @@ var myVue = new Vue({
 				//see private method checkState at salvoController.java to find out more about stateCode numbers, e.g. {8, "Waiting for your opponent to fire his/her Salvo"}
 				if(	game_view.CurrentGameState.stateCode == 8 ){
 					checkingForStateUpdate(game_view.CurrentGameState.stateCode);
-				}
-//				else if( game_view.CurrentGameState.stateCode == 7 ){
-//					delay = 15000;
-//					checkingForStateUpdate(game_view.CurrentGameState.stateCode);
-//				}			
+				}		
 			}
 		})
-			.catch(function (error) {
-			  console.log('Request failure: ', error);
-				alert(error);
-				//window.location.href = "games.html";
-
+			.catch(function (er) {
+				console.log(er.name + " & " + er.message);
+				myVue.showModalAlert(er.message);
+			$("#exampleModal").on("hide.bs.modal", function(){
+				window.location.href = "games.html";
+			})
 			});			
 	},		
 		postShips: function(){
@@ -98,13 +94,11 @@ var myVue = new Vue({
 			this.placedShips[2].locations = searchGridForClass("shipLocations", "submarine");
 			this.placedShips[3].locations = searchGridForClass("shipLocations", "destroyer");
 			this.placedShips[4].locations = searchGridForClass("shipLocations", "patrol_boat");
-			//console.log(this.placedShips);
+			
 			if(this.placedShips[0].locations.length == 0 || this.placedShips[1].locations.length == 0 || this.placedShips[2].locations.length == 0 || this.placedShips[3].locations.length == 0 || this.placedShips[4].locations.length == 0){
-				alert("You must place All five Warships on your Grid before start firing!")
+				myVue.showModalAlert("You must place All five Warships on your Grid before start firing!")
 			}
 			else{				
-				alert("Listo para enviar al Back-End...");
-					
 				fetch('/api/games/players/' + gp + '/ships', {
 						credentials: 'include',
 						headers: {
@@ -114,22 +108,29 @@ var myVue = new Vue({
 						body: JSON.stringify(this.placedShips)
 					})
 				.then(function(response){				
-					console.log("Adding Ships status" + response.status);
+					console.log(response);
 					return response.json();					
 				})
 				.then(function (data) {
 					if(data.error){
-						alert(data.error);
+						myVue.showModalAlert(data.error);
+						$("#exampleModal").on("hide.bs.modal", function(){
+							document.location.reload();
+						})
 					}
-					document.location.href='/web/game.html?gp=' + gp;
+					document.location.reload();
+					//document.location.href='/web/game.html?gp=' + gp;
 				})
-				.catch(function (error) {
-					console.log('Request failure: ', error);
+				.catch(function (er) {
+					//console.log('Request failure: ', er);
+					myVue.showModalAlert(er.message);
+					$("#exampleModal").on("hide.bs.modal", function(){
+						document.location.reload();
+						})
 				});
 			}
 		},
-		postSalvo: function(){
-			
+		postSalvo: function(){			
 			//add code to POST myVue.currentSalvo to the Back-End
 			fetch('/api/games/players/' + gp + '/salvoes', {
 						credentials: 'include',
@@ -140,17 +141,24 @@ var myVue = new Vue({
 						body: JSON.stringify(this.currentSalvo)
 					})
 				.then(function(response){				
-					console.log("Adding Salvo status" + response.status);
+					console.log(response);
 					return response.json();					
 				})
 				.then(function (data) {
 					if(data.error){
-						alert(data.error);
-					};
-					document.location.href='/web/game.html?gp=' + gp;
+						myVue.showModalAlert(data.error);
+						$("#exampleModal").on("hide.bs.modal", function(){
+							document.location.href='/web/game.html?gp=' + gp;
+						})
+					}
+					document.location.reload();
 				})
-				.catch(function (error) {
-					console.log('Request failure: ', error);
+				.catch(function (er) {
+					//console.log('Request failure: ', er);
+					myVue.showModalAlert(er.message);
+					$("#exampleModal").on("hide.bs.modal", function(){
+						document.location.reload();
+					})
 				});
 			
 			
@@ -175,7 +183,7 @@ var myVue = new Vue({
 						//console.log(this.currentSalvo.locations);
 					}
 					else{
-						alert("You can only fire 5 times in this turn")
+						myVue.showModalAlert("You can only fire 5 times in this turn")
 					}
 				}
 				else{
@@ -187,7 +195,7 @@ var myVue = new Vue({
 				}
 			}
 			else{
-				alert("You cannot select past salvoes locations");
+				myVue.showModalAlert("You cannot select past salvoes locations");
 			}
 		},
 		addHitToStatus: function(children, num, turn){
@@ -422,8 +430,25 @@ var myVue = new Vue({
 			}
 			else{
 				ev.target.classList.remove("greenish");
-				alert("position not permitted");
+				myVue.showModalAlert("position not permitted");
 			}			
+		},
+		mouseover_handler: function(ev){
+			var td = ev.target;
+			td.classList.add("yellow");
+		},
+		mouseout_handler: function(ev){
+			var td = ev.target;
+			td.classList.remove("yellow");
+		},
+		showModalAlert: function (text) {
+			this.modalAlertContent = text;
+			$('#exampleModal').modal('show');
+			//this.modalAlertContent = "reset modalAlertContent after calling modal!!";
+		},
+		closeModalAlert: function () {
+			$('#exampleModal').modal('hide');
+			this.modalAlertContent = "Modal closed!";
 		}
 		
 	},
@@ -440,7 +465,7 @@ function renderShipsTable(){
 }
 
 function renderSalvoesTable(){
-	document.getElementById("salvoesLocations").innerHTML = "<tr><td></td>" + colNumbers.map(col => "<td>" + col + "</td>").join("") + "</tr>" + rowLetters.map(row => "<tr><td>" + row + "</td>" + colNumbers.map(col => "<td id='salvo" + row + col + "'v-on:click='setSalvoLocation(this.event)'>" + "</td>").join("") + "</tr>").join("");
+	document.getElementById("salvoesLocations").innerHTML = "<tr><td></td>" + colNumbers.map(col => "<td>" + col + "</td>").join("") + "</tr>" + rowLetters.map(row => "<tr><td>" + row + "</td>" + colNumbers.map(col => "<td id='salvo" + row + col + "'v-on:click='setSalvoLocation(this.event)' v-on:mouseover='mouseover_handler(this.event)' v-on:mouseout='mouseout_handler(this.event)'>" + "</td>").join("") + "</tr>").join("");
 }
 
 function 	searchGridForClass(targetTable, targetClass){
@@ -481,9 +506,9 @@ function salvoesUpdate(stateCode){
 					checkingForStateUpdate(stateCode);
 				}
 			})
-			.catch(function (error) {
-			  console.log('Request failure: ', error);
-				alert(error);
+			.catch(function (er) {
+			  //console.log(er.message);
+				myVue.showModalAlert(er.message);
 				//window.location.href = "games.html";
 			});	
 }

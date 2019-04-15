@@ -66,11 +66,11 @@ public class SalvoController {
                     }
                 }
                 else{
-                    return new ResponseEntity<>(makeMap("error", "This game is already full"), HttpStatus.FORBIDDEN);
+                    return new ResponseEntity<>(makeMap("error", "This game has already two players"), HttpStatus.FORBIDDEN);
                 }
             }
             else{
-                return new ResponseEntity<>(makeMap("error", "The game you're searching for doesn't exist in the Games Repository"), HttpStatus.FORBIDDEN);
+                return new ResponseEntity<>(makeMap("error", "The game you're searching for doesn't exist in the Games Repository"), HttpStatus.NOT_FOUND);
             }
         }
         else{
@@ -226,11 +226,11 @@ public class SalvoController {
                     info.put("CurrentGameState", checkState(gamePlayerId));
                     return info;
                 } else {
-                    return new ResponseEntity<>(makeMap("error", "You're very smart but cheating is not permitted"), HttpStatus.UNAUTHORIZED);
+                    return new ResponseEntity<>(makeMap("error", "You're very smart but cheating is not permitted"), HttpStatus.METHOD_NOT_ALLOWED);
                 }
             }
             else{
-                return new ResponseEntity<>(makeMap("error", "There is no such gamePlayer in the Repository"), HttpStatus.UNAUTHORIZED);
+                return new ResponseEntity<>(makeMap("error", "There is no such gamePlayer in the Repository"), HttpStatus.NOT_FOUND);
             }
         }
         else {
