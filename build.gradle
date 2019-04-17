@@ -43,10 +43,12 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-rest'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
-	// https://mvnrepository.com/artifact/mysql/mysql-connector-java
-	//below for mysql database
+	//https://mvnrepository.com/artifact/mysql/mysql-connector-java
+	
+	//below: code for mysql database
 	//compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.15'
-	//below for postgres
+	
+	//below: code for postgres
 	compile("org.postgresql:postgresql")
 
 	//testCompile('org.springFramework.boot:spring-boot-starter-test')
