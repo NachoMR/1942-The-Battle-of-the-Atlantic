@@ -25,23 +25,11 @@ repositories {
 }
 
 //dependencies for H2 Database
-//dependencies {
-//	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-//	implementation 'org.springframework.boot:spring-boot-starter-data-rest'
-//	implementation 'org.springframework.boot:spring-boot-starter-web'
-//	runtimeOnly 'com.h2database:h2'
-//	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-//	//adding security:
-//	compile("org.springframework.boot:spring-boot-starter-security")
-//
-//}
-
-
-//dependencies for SQL database
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-data-rest'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+<<<<<<< HEAD
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	//https://mvnrepository.com/artifact/mysql/mysql-connector-java
 	
@@ -52,4 +40,22 @@ dependencies {
 	compile("org.postgresql:postgresql")
 
 	//testCompile('org.springFramework.boot:spring-boot-starter-test')
+=======
+	runtimeOnly 'com.h2database:h2'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	//adding security:
+	compile("org.springframework.boot:spring-boot-starter-security")
+
+>>>>>>> parent of bc8ef46... Postgres database and Heroku setup ready for deployment
 }
+
+
+//dependencies for SQL database
+//dependencies {
+//	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+//	implementation 'org.springframework.boot:spring-boot-starter-data-rest'
+//	implementation 'org.springframework.boot:spring-boot-starter-web'
+//	implementation 'org.springframework.boot:spring-boot-starter-security'
+//	// https://mvnrepository.com/artifact/mysql/mysql-connector-java
+//	compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.15'
+//}
