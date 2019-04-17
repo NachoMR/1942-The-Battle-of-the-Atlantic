@@ -46,12 +46,12 @@ public class SalvoApplication extends SpringBootServletInitializer {
 	@Bean
 	public CommandLineRunner init(PlayerRepository playerRepository, GameRepository gameRepository, GamePlayerRepository gamePlayerRepository, ShipRepository shipRepository, SalvoRepository salvoRepository, ScoreRepository scoreRepository) {
 		return (args) -> {
-//			Player p1 = new Player("Jack", "Bauer", "j.bauer@ctu.gov", passwordEncoder().encode("24"));
-//			Player p2 = new Player("Chloe", "O'Brian", "c.obrian@ctu.gov", passwordEncoder().encode("42"));
-//			Player p3 = new Player("Kim", "Bauer", "kim_bauer@gmail.com", passwordEncoder().encode("kb"));
-//			Player p4 = new Player("Tony", "Almeida", "t.almeida@ctu.gov", passwordEncoder().encode("mole"));
-//			Game g1 = new Game(LocalDateTime.now());
-//			Game g2 = new Game(LocalDateTime.of(2019, Month.FEBRUARY, 04, 14, 30));
+			Player p1 = new Player("Jack", "Bauer", "j.bauer@ctu.gov", passwordEncoder().encode("24"));
+			Player p2 = new Player("Chloe", "O'Brian", "c.obrian@ctu.gov", passwordEncoder().encode("42"));
+			Player p3 = new Player("Kim", "Bauer", "kim_bauer@gmail.com", passwordEncoder().encode("kb"));
+			Player p4 = new Player("Tony", "Almeida", "t.almeida@ctu.gov", passwordEncoder().encode("mole"));
+			Game g1 = new Game(LocalDateTime.now());
+			Game g2 = new Game(LocalDateTime.of(2019, Month.FEBRUARY, 04, 14, 30));
 //			Game g3 = new Game(LocalDateTime.parse("2019-02-07T17:45:00"));
 //			Game g4 = new Game(LocalDateTime.parse("2019-01-02T17:45:00"));
 //			Game g5 = new Game(LocalDateTime.parse("2019-01-01T17:45:00"));
@@ -59,10 +59,10 @@ public class SalvoApplication extends SpringBootServletInitializer {
 //			Game g7 = new Game(LocalDateTime.parse("2019-01-14T17:45:00"));
 //			Game g8 = new Game(LocalDateTime.parse("2019-01-30T17:45:00"));
 //			Game g9 = new Game(LocalDateTime.now());
-//			GamePlayer gp1 = new GamePlayer(g1, p1);
-//			GamePlayer gp2 = new GamePlayer(g1, p2);
-//			GamePlayer gp3 = new GamePlayer(g2, p1);
-//			GamePlayer gp4 = new GamePlayer(g2, p2);
+			GamePlayer gp1 = new GamePlayer(g1, p1);
+			GamePlayer gp2 = new GamePlayer(g1, p2);
+			GamePlayer gp3 = new GamePlayer(g2, p1);
+			GamePlayer gp4 = new GamePlayer(g2, p2);
 //			GamePlayer gp5 = new GamePlayer(g3, p2);
 //			GamePlayer gp6 = new GamePlayer(g3, p4);
 //			GamePlayer gp7 = new GamePlayer(g4, p2);
@@ -75,15 +75,15 @@ public class SalvoApplication extends SpringBootServletInitializer {
 //			GamePlayer gp14 = new GamePlayer(g8, p4);
 //			GamePlayer gp15 = new GamePlayer(g9, p4);
 //			GamePlayer gp16 = new GamePlayer(g9, p2);
-//			Ship s1 = new Ship("destroyer", Arrays.asList("H2", "H3", "H4"));
-//			Ship s2 = new Ship("submarine", Arrays.asList("E1", "F1", "G1"));
-//			Ship s3 = new Ship("patrol_boat", Arrays.asList("B4", "B5"));
-//			Ship s4 = new Ship("destroyer", Arrays.asList("B5", "C5", "D5"));
-//			Ship s5 = new Ship("patrol_boat", Arrays.asList("F1", "F2"));
-//			Ship s6 = new Ship("destroyer", Arrays.asList("B5", "C5", "D5"));
-//			Ship s7 = new Ship("patrol_boat", Arrays.asList("C6", "C7"));
-//			Ship s8 = new Ship("submarine", Arrays.asList("A2", "A3", "A4"));
-//			Ship s9 = new Ship("patrol_boat", Arrays.asList("G6", "H6"));
+			Ship s1 = new Ship("destroyer", Arrays.asList("H2", "H3", "H4"));
+			Ship s2 = new Ship("submarine", Arrays.asList("E1", "F1", "G1"));
+			Ship s3 = new Ship("patrol_boat", Arrays.asList("B4", "B5"));
+			Ship s4 = new Ship("destroyer", Arrays.asList("B5", "C5", "D5"));
+			Ship s5 = new Ship("patrol_boat", Arrays.asList("F1", "F2"));
+			Ship s6 = new Ship("destroyer", Arrays.asList("B5", "C5", "D5"));
+			Ship s7 = new Ship("patrol_boat", Arrays.asList("C6", "C7"));
+			Ship s8 = new Ship("submarine", Arrays.asList("A2", "A3", "A4"));
+			Ship s9 = new Ship("patrol_boat", Arrays.asList("G6", "H6"));
 //			Ship s10 = new Ship("destroyer", Arrays.asList("B5", "C5", "D5"));
 //			Ship s11 = new Ship("patrol_boat", Arrays.asList("C6", "C7"));
 //			Ship s12 = new Ship("submarine", Arrays.asList("A2", "A3", "A4"));
@@ -112,16 +112,16 @@ public class SalvoApplication extends SpringBootServletInitializer {
 //			Ship s35 = new Ship("destroyer", Arrays.asList("B9", "C9", "D9"));
 //			Ship s36 = new Ship("submarine", Arrays.asList("D3", "D4", "D5"));
 //			Ship s37 = new Ship("patrol_boat", Arrays.asList("G4", "H4"));
-//
-//			gp1.addShip(s1);
-//			gp1.addShip(s2);
-//			gp1.addShip(s3);
-//			gp2.addShip(s4);
-//			gp2.addShip(s5);
-//			gp3.addShip(s6);
-//			gp3.addShip(s7);
-//			gp4.addShip(s8);
-//			gp4.addShip(s9);
+
+			gp1.addShip(s1);
+			gp1.addShip(s2);
+			gp1.addShip(s3);
+			gp2.addShip(s4);
+			gp2.addShip(s5);
+			gp3.addShip(s6);
+			gp3.addShip(s7);
+			gp4.addShip(s8);
+			gp4.addShip(s9);
 //			gp5.addShip(s10);
 //			gp5.addShip(s11);
 //			gp6.addShip(s12);
@@ -150,15 +150,15 @@ public class SalvoApplication extends SpringBootServletInitializer {
 //			gp16.addShip(s35);
 //			gp16.addShip(s36);
 //			gp16.addShip(s37);
-//
-//			Salvo sa1 = new Salvo(1, Arrays.asList("B5", "C5", "F1"));
-//			Salvo sa2 = new Salvo(2, Arrays.asList("F2", "D5"));
-//			Salvo sa3 = new Salvo(1, Arrays.asList("B4", "B5", "B6"));
-//			Salvo sa4 = new Salvo(2, Arrays.asList("E1", "H3", "A2"));
-//			Salvo sa5 = new Salvo(1, Arrays.asList("A2", "A4", "G6"));
-//			Salvo sa6 = new Salvo(2, Arrays.asList("A3", "H2"));
-//			Salvo sa7 = new Salvo(1, Arrays.asList("B5", "D5", "C7"));
-//			Salvo sa8 = new Salvo(2, Arrays.asList("C5", "C6"));
+
+			Salvo sa1 = new Salvo(1, Arrays.asList("B5", "C5", "F1"));
+			Salvo sa2 = new Salvo(2, Arrays.asList("F2", "D5"));
+			Salvo sa3 = new Salvo(1, Arrays.asList("B4", "B5", "B6"));
+			Salvo sa4 = new Salvo(2, Arrays.asList("E1", "H3", "A2"));
+			Salvo sa5 = new Salvo(1, Arrays.asList("A2", "A4", "G6"));
+			Salvo sa6 = new Salvo(2, Arrays.asList("A3", "H2"));
+			Salvo sa7 = new Salvo(1, Arrays.asList("B5", "D5", "C7"));
+			Salvo sa8 = new Salvo(2, Arrays.asList("C5", "C6"));
 //			Salvo sa9 = new Salvo(1, Arrays.asList("G6", "H6", "A4"));
 //			Salvo sa10 = new Salvo(2, Arrays.asList("A2", "A3", "D8"));
 //			Salvo sa11 = new Salvo(1, Arrays.asList("H1", "H2", "H3"));
@@ -190,15 +190,15 @@ public class SalvoApplication extends SpringBootServletInitializer {
 //			Salvo sa35 = new Salvo(6, Arrays.asList("E8", "F8", "G8"));
 //			Salvo sa36 = new Salvo(7, Arrays.asList("E9", "E10", "F2"));
 //			Salvo sa37 = new Salvo(8, Arrays.asList("G6", "H6"));
-//
-//			gp1.addSalvo(sa1);
-//			gp1.addSalvo(sa2);
-//			gp2.addSalvo(sa3);
-//			gp2.addSalvo(sa4);
-//			gp3.addSalvo(sa5);
-//			gp3.addSalvo(sa6);
-//			gp4.addSalvo(sa7);
-//			gp4.addSalvo(sa8);
+
+			gp1.addSalvo(sa1);
+			gp1.addSalvo(sa2);
+			gp2.addSalvo(sa3);
+			gp2.addSalvo(sa4);
+			gp3.addSalvo(sa5);
+			gp3.addSalvo(sa6);
+			gp4.addSalvo(sa7);
+			gp4.addSalvo(sa8);
 //			gp5.addSalvo(sa9);
 //			gp5.addSalvo(sa10);
 //			gp6.addSalvo(sa11);
@@ -229,16 +229,16 @@ public class SalvoApplication extends SpringBootServletInitializer {
 //			gp16.addSalvo(sa35);
 //			gp16.addSalvo(sa36);
 //			gp16.addSalvo(sa37);
-//
-//
-//			Score sc1 = new Score(1.0, g1, p1);
-//			p1.addScore(sc1);
-//			Score sc2 = new Score(0.0, g1, p2);
-//			p2.addScore(sc2);
-//			Score sc3 = new Score(0.5, g2, p1);
-//			p1.addScore(sc3);
-//			Score sc4 = new Score(0.5, g2, p2);
-//			p2.addScore(sc4);
+
+
+			Score sc1 = new Score(1.0, g1, p1);
+			p1.addScore(sc1);
+			Score sc2 = new Score(0.0, g1, p2);
+			p2.addScore(sc2);
+			Score sc3 = new Score(0.5, g2, p1);
+			p1.addScore(sc3);
+			Score sc4 = new Score(0.5, g2, p2);
+			p2.addScore(sc4);
 //			Score sc5 = new Score(1.0, g3, p2);
 //			p2.addScore(sc5);
 //			Score sc6 = new Score(0.0, g3, p4);
@@ -247,15 +247,13 @@ public class SalvoApplication extends SpringBootServletInitializer {
 //			p2.addScore(sc7);
 //			Score sc8 = new Score(0.5, g4, p1);
 //			p1.addScore(sc8);
-////			Score sc9 = new Score(0.0, g9, p2);
-////			Score sc10 = new Score(1.0, g9, p4);
-//
-//			playerRepository.save(p1);
-//			playerRepository.save(p2);
-//			playerRepository.save(p3);
-//			playerRepository.save(p4);
-//			gameRepository.save(g1);
-//			gameRepository.save(g2);
+
+			playerRepository.save(p1);
+			playerRepository.save(p2);
+			playerRepository.save(p3);
+			playerRepository.save(p4);
+			gameRepository.save(g1);
+			gameRepository.save(g2);
 //			gameRepository.save(g3);
 //			gameRepository.save(g4);
 //			gameRepository.save(g5);
@@ -263,11 +261,11 @@ public class SalvoApplication extends SpringBootServletInitializer {
 //			gameRepository.save(g7);
 //			gameRepository.save(g8);
 //			gameRepository.save(g9);
-//
-//			gamePlayerRepository.save(gp1);
-//			gamePlayerRepository.save(gp2);
-//			gamePlayerRepository.save(gp3);
-//			gamePlayerRepository.save(gp4);
+
+			gamePlayerRepository.save(gp1);
+			gamePlayerRepository.save(gp2);
+			gamePlayerRepository.save(gp3);
+			gamePlayerRepository.save(gp4);
 //			gamePlayerRepository.save(gp5);
 //			gamePlayerRepository.save(gp6);
 //			gamePlayerRepository.save(gp7);
@@ -280,16 +278,16 @@ public class SalvoApplication extends SpringBootServletInitializer {
 //			gamePlayerRepository.save(gp14);
 //			gamePlayerRepository.save(gp15);
 //			gamePlayerRepository.save(gp16);
-//
-//			shipRepository.save(s1);
-//			shipRepository.save(s2);
-//			shipRepository.save(s3);
-//			shipRepository.save(s4);
-//			shipRepository.save(s5);
-//			shipRepository.save(s6);
-//			shipRepository.save(s7);
-//			shipRepository.save(s8);
-//			shipRepository.save(s9);
+
+			shipRepository.save(s1);
+			shipRepository.save(s2);
+			shipRepository.save(s3);
+			shipRepository.save(s4);
+			shipRepository.save(s5);
+			shipRepository.save(s6);
+			shipRepository.save(s7);
+			shipRepository.save(s8);
+			shipRepository.save(s9);
 //			shipRepository.save(s10);
 //			shipRepository.save(s11);
 //			shipRepository.save(s12);
@@ -318,15 +316,15 @@ public class SalvoApplication extends SpringBootServletInitializer {
 //			shipRepository.save(s35);
 //			shipRepository.save(s36);
 //			shipRepository.save(s37);
-//
-//			salvoRepository.save(sa1);
-//			salvoRepository.save(sa2);
-//			salvoRepository.save(sa3);
-//			salvoRepository.save(sa4);
-//			salvoRepository.save(sa5);
-//			salvoRepository.save(sa6);
-//			salvoRepository.save(sa7);
-//			salvoRepository.save(sa8);
+
+			salvoRepository.save(sa1);
+			salvoRepository.save(sa2);
+			salvoRepository.save(sa3);
+			salvoRepository.save(sa4);
+			salvoRepository.save(sa5);
+			salvoRepository.save(sa6);
+			salvoRepository.save(sa7);
+			salvoRepository.save(sa8);
 //			salvoRepository.save(sa9);
 //			salvoRepository.save(sa10);
 //			salvoRepository.save(sa11);
@@ -357,17 +355,15 @@ public class SalvoApplication extends SpringBootServletInitializer {
 //			salvoRepository.save(sa35);
 //			salvoRepository.save(sa36);
 //			salvoRepository.save(sa37);
-//
-//			scoreRepository.save(sc1);
-//			scoreRepository.save(sc2);
-//			scoreRepository.save(sc3);
-//			scoreRepository.save(sc4);
+
+			scoreRepository.save(sc1);
+			scoreRepository.save(sc2);
+			scoreRepository.save(sc3);
+			scoreRepository.save(sc4);
 //			scoreRepository.save(sc5);
 //			scoreRepository.save(sc6);
 //			scoreRepository.save(sc7);
 //			scoreRepository.save(sc8);
-////			scoreRepository.save(sc9);
-////			scoreRepository.save(sc10);
 		};
 	}
 
