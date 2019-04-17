@@ -30,6 +30,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-rest'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 <<<<<<< HEAD
+<<<<<<< HEAD
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	//https://mvnrepository.com/artifact/mysql/mysql-connector-java
 	
@@ -41,11 +42,16 @@ dependencies {
 
 	//testCompile('org.springFramework.boot:spring-boot-starter-test')
 =======
+=======
+>>>>>>> parent of bc8ef46... Postgres database and Heroku setup ready for deployment
 	runtimeOnly 'com.h2database:h2'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	//adding security:
 	compile("org.springframework.boot:spring-boot-starter-security")
 
+<<<<<<< HEAD
+>>>>>>> parent of bc8ef46... Postgres database and Heroku setup ready for deployment
+=======
 >>>>>>> parent of bc8ef46... Postgres database and Heroku setup ready for deployment
 }
 
