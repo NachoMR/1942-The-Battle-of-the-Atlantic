@@ -45,6 +45,25 @@ public class SalvoController {
                 //.sorted((b1, b2) -> b2.get("total") - b1.get("total"))
                 .collect(toList());
     }
+
+//    public List<Map> getLeaderboard(){
+//        if(playerRepo.findAll().size() == 0) {
+//            List<Map> leaderboardEmpty = new ArrayList<>();
+//            Map<String, Object> info = new LinkedHashMap<>();
+//            info.put("error", "The players' Repository is empty");
+//            leaderboardEmpty.add(info);
+//            return leaderboardEmpty;
+//        }else {
+//            return playerRepo.findAll()
+//                    .stream()
+//                    .map(player -> playerInfoDTO(player))
+//                    //.sorted((b1, b2) -> b2.get("total") - b1.get("total"))
+//                    .collect(toList());
+//        }
+//    }
+
+
+
     //POST Request to Join an Existing Game
     @RequestMapping(path = "/game/{gameId}/players", method = RequestMethod.POST)
     public ResponseEntity<Map<String, Object>> joinGame (@PathVariable Long gameId, Authentication authentication){

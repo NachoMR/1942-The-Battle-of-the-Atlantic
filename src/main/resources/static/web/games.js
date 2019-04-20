@@ -21,7 +21,7 @@ var myVue = new Vue({
 	},
 	methods: {
 		gameOutcome: function (game) {
-			if (game.scores.length == 1) {
+			if (game.scores.length <= 1) {
 				return "Not started"
 			} else if (game.scores[0].score == null || game.scores[1].score == null) {
 				return "Not finished"

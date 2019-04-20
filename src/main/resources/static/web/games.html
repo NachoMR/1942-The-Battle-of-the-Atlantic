@@ -194,7 +194,7 @@
 							<th class="align-top" v-if="auth">Action</th>
 						</tr>
 					</thead>
-					<tbody>
+					<tbody v-if="gamesJson.games.length > 0">
 						<tr v-for="game in gamesJson.games">
 							<td>{{game.id}}</td>
 							<td v-for="gameplayer in game.gameplayers">{{gameplayer.player.email.split("@")[0] + " (gp=" + gameplayer.id + ")"}}</td>
@@ -230,7 +230,7 @@
 							<th>Lost</th>
 						</tr>
 					</thead>
-					<tbody>
+					<tbody v-if="sortedLeaderboard.length > 0">
 						<tr v-for="item in sortedLeaderboard">
 							<td>{{item.name.split("@")[0]}}</td>
 							<td>{{item.total_played}}</td>

@@ -25,31 +25,31 @@ repositories {
 }
 
 //dependencies for H2 Database
-//dependencies {
-//	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-//	implementation 'org.springframework.boot:spring-boot-starter-data-rest'
-//	implementation 'org.springframework.boot:spring-boot-starter-web'
-//	implementation 'org.springframework.boot:spring-boot-starter-security'
-//	//https://mvnrepository.com/artifact/mysql/mysql-connector-java
-//	//testCompile('org.springFramework.boot:spring-boot-starter-test')
-//	runtimeOnly 'com.h2database:h2'
-//	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-//	//adding security:
-//	compile("org.springframework.boot:spring-boot-starter-security")
-//}
-
-
-//dependencies for SQL database
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-data-rest'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
-	
-	//below: code for mysql database
-	//compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.15'
-	// https://mvnrepository.com/artifact/mysql/mysql-connector-java
-	
-	//below: code for postgres
-	compile("org.postgresql:postgresql")
+	//https://mvnrepository.com/artifact/mysql/mysql-connector-java
+	//testCompile('org.springFramework.boot:spring-boot-starter-test')
+	runtimeOnly 'com.h2database:h2'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	//adding security:
+	compile("org.springframework.boot:spring-boot-starter-security")
 }
+
+
+//dependencies for SQL database
+//dependencies {
+//	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+//	implementation 'org.springframework.boot:spring-boot-starter-data-rest'
+//	implementation 'org.springframework.boot:spring-boot-starter-web'
+//	implementation 'org.springframework.boot:spring-boot-starter-security'
+//
+//	//below: code for mysql database
+//	//compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.15'
+//	// https://mvnrepository.com/artifact/mysql/mysql-connector-java
+//
+//	//below: code for postgres
+//	compile("org.postgresql:postgresql")
+//}
